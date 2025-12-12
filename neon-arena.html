@@ -5,31 +5,19 @@
   <title>Neon Arena – Campaign</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <!-- =========================
-       GOOGLE ADSENSE (GLOBAL)
-       =========================
-       After AdSense approval:
-
-       1. Replace YOUR-CLIENT-ID with your real client id.
-       2. Remove the comment markers ()
-  <!--
+  <!-- ✅ AUTO ADS: keep ONLY this one AdSense loader (same as index.html) -->
   <script async
-          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=YOUR-CLIENT-ID"
-          crossorigin="anonymous"></script>
-  -->
+    src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5482914432517813"
+    crossorigin="anonymous"></script>
 
   <style>
     :root { color-scheme: dark; }
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
       background:
-		linear-gradient(135deg, rgba(0,0,0,0.8), rgba(15,23,42,0.9)), /* dark overlay */
-		url("images/hub-bg.jpg") center center / cover no-repeat fixed;
+        linear-gradient(135deg, rgba(0,0,0,0.8), rgba(15,23,42,0.9)),
+        url("images/hub-bg.jpg") center center / cover no-repeat fixed;
       color: #e5e7eb;
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       min-height: 100vh;
@@ -38,7 +26,7 @@
       align-items: stretch;
     }
 
-    /* --------- LAYOUT: side ads + main game --------- */
+    /* --------- LAYOUT: side spacing + main game --------- */
     .page-wrap {
       display: flex;
       width: 100%;
@@ -55,32 +43,10 @@
       padding: 4px;
     }
 
-    /* Placeholder boxes until ads are live */
-    .ad-placeholder {
-      width: 160px;
-      height: 600px;
-      border-radius: 12px;
-      background: #020617;
-      border: 1px dashed #374151;
-      color: #9ca3af;
-      font-size: 0.75rem;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      padding: 0.75rem;
-    }
-    .ad-placeholder span { opacity: 0.8; }
-
-    .side-banner ins.adsbygoogle {
-      border-radius: 12px;
-      overflow: hidden;
-    }
-
+    /* Hide side columns on small screens */
     @media (max-width: 1024px) {
       .side-banner { display: none; }
-      .page-wrap { justify-content: center; }
+      .page-wrap { justify-content: center; padding: 10px; }
     }
 
     /* --------- MAIN GAME PANEL --------- */
@@ -93,10 +59,10 @@
       display: flex;
       flex-direction: column;
       overflow: hidden;
-      max-height: calc(100vh - 24px);
+      /* NOTE: removed hard max-height so mobile scrolling behaves naturally */
     }
 
-    /* Top banner (leaderboard) above canvas */
+    /* Top strip (Auto Ads can still place ads on the page) */
     .top-banner {
       padding: 0.6rem 1.2rem 0.4rem;
       border-bottom: 1px solid #111827;
@@ -110,43 +76,10 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      min-height: 70px;
-    }
-    .ad-placeholder-top {
-      width: 728px;
-      height: 90px;
-      max-width: 100%;
-      border-radius: 12px;
-      background: #020617;
-      border: 1px dashed #374151;
-      color: #9ca3af;
-      font-size: 0.8rem;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      padding: 0.75rem;
-    }
-    .ad-placeholder-top span { opacity: 0.8; }
-
-    .top-banner ins.adsbygoogle {
-      display: block;
-      border-radius: 12px;
-      overflow: hidden;
+      min-height: 18px; /* small spacer */
     }
 
-    @media (max-width: 700px) {
-      .top-banner {
-        padding: 0.4rem 0.8rem 0.2rem;
-      }
-      .ad-placeholder-top {
-        height: auto;
-        min-height: 60px;
-      }
-    }
-
-    /* Game header above the canvas */
+    /* Game header above canvas */
     .game-header {
       padding: 0.55rem 1.2rem;
       border-bottom: 1px solid #111827;
@@ -155,25 +88,27 @@
       align-items: center;
       background: linear-gradient(135deg, #020617 0, #111827 40%, #0b1120 100%);
       font-size: 0.9rem;
+      gap: 0.8rem;
+      flex-wrap: wrap;
     }
     .game-header .title {
-      font-weight: 600;
+      font-weight: 700;
       letter-spacing: 0.03em;
     }
     .game-header a {
-      color: #9ca3af;
+      color: #e5e7eb;
       text-decoration: none;
-      font-size: 0.8rem;
-      padding: 0.25rem 0.6rem;
+      font-size: 0.85rem;
+      padding: 0.35rem 0.75rem;
       border-radius: 999px;
       border: 1px solid #374151;
+      background: rgba(2,6,23,0.35);
     }
     .game-header a:hover {
-      color: #e5e7eb;
       border-color: #6366f1;
     }
 
-    /* Game body – center canvas */
+    /* Game body */
     .game-body {
       flex: 1 1 auto;
       display: flex;
@@ -184,13 +119,26 @@
     }
 
     canvas {
+      width: 100%;
+      max-width: 960px;
+      aspect-ratio: 16 / 9;      /* ✅ keeps nice shape on mobile */
+      height: auto;
       border-radius: 12px;
       border: 1px solid #4b5563;
       background: radial-gradient(circle at top, #0f172a 0, #020617 55%, #000 100%);
       box-shadow: 0 20px 50px rgba(0,0,0,0.8);
-      max-width: 100%;
-      height: auto;
       cursor: crosshair;
+      touch-action: none;        /* ✅ important for touch aiming */
+    }
+
+    /* ✅ Mobile adjustments */
+    @media (max-width: 700px) {
+      .page-wrap { padding: 8px; gap: 8px; }
+      .top-banner { padding: 0.35rem 0.6rem 0.25rem; }
+      .game-header { padding: 0.5rem 0.7rem; font-size: 0.85rem; }
+      .game-header a { font-size: 0.8rem; padding: 0.3rem 0.65rem; }
+      .game-body { padding: 0.55rem 0.7rem 0.85rem; }
+      canvas { max-width: 100%; }
     }
   </style>
 </head>
@@ -198,56 +146,15 @@
 
 <div class="page-wrap">
 
-  <!-- LEFT SIDEBAR AD -->
-  <aside class="side-banner">
-    <!--
-      LEFT AD SLOT
-      ------------
-      After approval, replace YOUR-CLIENT-ID / YOUR-LEFT-SLOT-ID
-      and remove comments.
-    -->
-    <!--
-    <ins class="adsbygoogle"
-         style="display:block;width:160px;height:600px"
-         data-ad-client="YOUR-CLIENT-ID"
-         data-ad-slot="YOUR-LEFT-SLOT-ID"></ins>
-    <script>
-      (adsbygoogle = window.adsbygoogle || []).push({});
-    </script>
-    -->
-
-    <div class="ad-placeholder">
-      <strong>Ad Slot</strong>
-      <span>160×600 left sidebar banner.</span>
-    </div>
-  </aside>
+  <!-- LEFT COLUMN (kept empty for Auto Ads spacing) -->
+  <aside class="side-banner"></aside>
 
   <!-- MAIN GAME PANEL -->
   <main class="main-game">
 
-    <!-- TOP LEADERBOARD -->
+    <!-- TOP STRIP (Auto Ads handles placement) -->
     <div class="top-banner">
-      <div class="top-banner-inner">
-        <!--
-          TOP LEADERBOARD SLOT
-          --------------------
-          Typical: 728×90. Replace IDs, then uncomment.
-        -->
-        <!--
-        <ins class="adsbygoogle"
-             style="display:block;width:728px;height:90px"
-             data-ad-client="YOUR-CLIENT-ID"
-             data-ad-slot="YOUR-TOP-SLOT-ID"></ins>
-        <script>
-          (adsbygoogle = window.adsbygoogle || []).push({});
-        </script>
-        -->
-
-        <div class="ad-placeholder-top">
-          <strong>Top Banner Ad</strong>
-          <span>Place your 728×90 / responsive unit here.</span>
-        </div>
-      </div>
+      <div class="top-banner-inner"></div>
     </div>
 
     <!-- GAME HEADER -->
@@ -258,35 +165,16 @@
       </div>
     </div>
 
-    <!-- GAME BODY: your canvas here -->
+    <!-- GAME BODY -->
     <div class="game-body">
+      <!-- Keep internal resolution stable for gameplay logic -->
       <canvas id="gameCanvas" width="960" height="540"></canvas>
     </div>
 
   </main>
 
-  <!-- RIGHT SIDEBAR AD -->
-  <aside class="side-banner">
-    <!--
-      RIGHT AD SLOT
-      -------------
-      Replace YOUR-CLIENT-ID / YOUR-RIGHT-SLOT-ID and uncomment.
-    -->
-    <!--
-    <ins class="adsbygoogle"
-         style="display:block;width:160px;height:600px"
-         data-ad-client="YOUR-CLIENT-ID"
-         data-ad-slot="YOUR-RIGHT-SLOT-ID"></ins>
-    <script>
-      (adsbygoogle = window.adsbygoogle || []).push({});
-    </script>
-    -->
-
-    <div class="ad-placeholder">
-      <strong>Ad Slot</strong>
-      <span>160×600 right sidebar banner.</span>
-    </div>
-  </aside>
+  <!-- RIGHT COLUMN (kept empty for Auto Ads spacing) -->
+  <aside class="side-banner"></aside>
 
 </div>
 
@@ -368,21 +256,41 @@
     keys[e.key.toLowerCase()] = false;
   });
 
-  canvas.addEventListener("mousemove", (e) => {
+  function setMouseFromClient(clientX, clientY) {
     const rect = canvas.getBoundingClientRect();
     const scaleX = canvas.width / rect.width;
     const scaleY = canvas.height / rect.height;
-    mouse.x = (e.clientX - rect.left) * scaleX;
-    mouse.y = (e.clientY - rect.top) * scaleY;
+    mouse.x = (clientX - rect.left) * scaleX;
+    mouse.y = (clientY - rect.top) * scaleY;
+  }
+
+  canvas.addEventListener("mousemove", (e) => {
+    setMouseFromClient(e.clientX, e.clientY);
   });
 
-  canvas.addEventListener("mousedown", () => {
+  canvas.addEventListener("mousedown", () => { mouse.down = true; });
+  window.addEventListener("mouseup", () => { mouse.down = false; });
+
+  // ✅ Mobile: touch aiming + hold to shoot
+  canvas.addEventListener("touchstart", (e) => {
+    e.preventDefault();
+    const t = e.touches[0];
+    if (!t) return;
+    setMouseFromClient(t.clientX, t.clientY);
     mouse.down = true;
-  });
+  }, { passive: false });
 
-  window.addEventListener("mouseup", () => {
+  canvas.addEventListener("touchmove", (e) => {
+    e.preventDefault();
+    const t = e.touches[0];
+    if (!t) return;
+    setMouseFromClient(t.clientX, t.clientY);
+  }, { passive: false });
+
+  canvas.addEventListener("touchend", (e) => {
+    e.preventDefault();
     mouse.down = false;
-  });
+  }, { passive: false });
 
   canvas.addEventListener("click", (e) => {
     const rect = canvas.getBoundingClientRect();
@@ -419,9 +327,7 @@
         const r = game.mapRects[i];
         if (!r) continue;
         if (mx >= r.x && mx <= r.x + r.w && my >= r.y && my <= r.y + r.h) {
-          if (i < progress.unlocked) {
-            startLevel(i);
-          }
+          if (i < progress.unlocked) startLevel(i);
           break;
         }
       }
@@ -449,8 +355,6 @@
 
   const progress = { unlocked: 1 };
 
-  //const PROGRESS_KEY = "neon_arena_campaign_progress_v1";
-
   function loadProgress() {
     try {
       const raw = localStorage.getItem(PROGRESS_KEY);
@@ -463,18 +367,14 @@
   }
 
   function saveProgress() {
-    try {
-      localStorage.setItem(PROGRESS_KEY, JSON.stringify(progress));
-    } catch (_) {}
+    try { localStorage.setItem(PROGRESS_KEY, JSON.stringify(progress)); } catch (_) {}
   }
 
   loadProgress();
 
   const player = {
-    x: WIDTH / 2,
-    y: HEIGHT / 2,
-    prevX: WIDTH / 2,
-    prevY: HEIGHT / 2,
+    x: WIDTH / 2, y: HEIGHT / 2,
+    prevX: WIDTH / 2, prevY: HEIGHT / 2,
     radius: 14,
     color: "#38bdf8",
     baseSpeed: 220,
@@ -526,7 +426,7 @@
     { type: "rapid",  label: "RAP", color: "#ec4899", duration: 8 }
   ];
 
-  // ---------- Level definitions WITH hazards ----------
+  // ---------- Levels ----------
   game.levels = [
     {
       name: "Neon District",
@@ -538,28 +438,8 @@
       bossHp: 500,
       bossShootMultiplier: 1.0,
       hazards: [
-        {
-          type: "laser",
-          orientation: "horizontal",
-          x: WIDTH * 0.1,
-          y: HEIGHT * 0.33,
-          length: WIDTH * 0.8,
-          thickness: 10,
-          cycle: 4,
-          activeTime: 2,
-          phase: 0
-        },
-        {
-          type: "laser",
-          orientation: "horizontal",
-          x: WIDTH * 0.1,
-          y: HEIGHT * 0.66,
-          length: WIDTH * 0.8,
-          thickness: 10,
-          cycle: 4,
-          activeTime: 2,
-          phase: 2
-        }
+        { type: "laser", orientation: "horizontal", x: WIDTH * 0.1, y: HEIGHT * 0.33, length: WIDTH * 0.8, thickness: 10, cycle: 4, activeTime: 2, phase: 0 },
+        { type: "laser", orientation: "horizontal", x: WIDTH * 0.1, y: HEIGHT * 0.66, length: WIDTH * 0.8, thickness: 10, cycle: 4, activeTime: 2, phase: 2 }
       ]
     },
     {
@@ -572,35 +452,9 @@
       bossHp: 650,
       bossShootMultiplier: 0.9,
       hazards: [
-        {
-          type: "blade",
-          cx: WIDTH / 2,
-          cy: HEIGHT / 2,
-          orbitRadius: 150,
-          angularSpeed: 1.2,
-          bladeRadius: 18,
-          startAngle: 0
-        },
-        {
-          type: "blade",
-          cx: WIDTH / 2,
-          cy: HEIGHT / 2,
-          orbitRadius: 220,
-          angularSpeed: -0.8,
-          bladeRadius: 16,
-          startAngle: Math.PI / 2
-        },
-        {
-          type: "laser",
-          orientation: "vertical",
-          x: WIDTH / 2,
-          y: HEIGHT * 0.1,
-          length: HEIGHT * 0.8,
-          thickness: 12,
-          cycle: 5,
-          activeTime: 2.4,
-          phase: 1
-        }
+        { type: "blade", cx: WIDTH / 2, cy: HEIGHT / 2, orbitRadius: 150, angularSpeed: 1.2, bladeRadius: 18, startAngle: 0 },
+        { type: "blade", cx: WIDTH / 2, cy: HEIGHT / 2, orbitRadius: 220, angularSpeed: -0.8, bladeRadius: 16, startAngle: Math.PI / 2 },
+        { type: "laser", orientation: "vertical", x: WIDTH / 2, y: HEIGHT * 0.1, length: HEIGHT * 0.8, thickness: 12, cycle: 5, activeTime: 2.4, phase: 1 }
       ]
     },
     {
@@ -613,38 +467,10 @@
       bossHp: 800,
       bossShootMultiplier: 0.8,
       hazards: [
-        {
-          type: "wall",
-          x: WIDTH / 2 - 200,
-          y: HEIGHT / 2 - 12,
-          w: 400,
-          h: 24
-        },
-        {
-          type: "wall",
-          x: WIDTH / 2 - 12,
-          y: HEIGHT / 2 - 160,
-          w: 24,
-          h: 320
-        },
-        {
-          type: "blade",
-          cx: WIDTH * 0.25,
-          cy: HEIGHT / 2,
-          orbitRadius: 110,
-          angularSpeed: 1.4,
-          bladeRadius: 18,
-          startAngle: 0
-        },
-        {
-          type: "blade",
-          cx: WIDTH * 0.75,
-          cy: HEIGHT / 2,
-          orbitRadius: 110,
-          angularSpeed: -1.4,
-          bladeRadius: 18,
-          startAngle: Math.PI / 2
-        }
+        { type: "wall", x: WIDTH / 2 - 200, y: HEIGHT / 2 - 12, w: 400, h: 24 },
+        { type: "wall", x: WIDTH / 2 - 12,  y: HEIGHT / 2 - 160, w: 24,  h: 320 },
+        { type: "blade", cx: WIDTH * 0.25, cy: HEIGHT / 2, orbitRadius: 110, angularSpeed: 1.4, bladeRadius: 18, startAngle: 0 },
+        { type: "blade", cx: WIDTH * 0.75, cy: HEIGHT / 2, orbitRadius: 110, angularSpeed: -1.4, bladeRadius: 18, startAngle: Math.PI / 2 }
       ]
     },
     {
@@ -657,96 +483,16 @@
       bossHp: 1000,
       bossShootMultiplier: 0.65,
       hazards: [
-        {
-          type: "laser",
-          orientation: "horizontal",
-          x: WIDTH * 0.1,
-          y: HEIGHT * 0.25,
-          length: WIDTH * 0.8,
-          thickness: 10,
-          cycle: 3.8,
-          activeTime: 1.8,
-          phase: 0
-        },
-        {
-          type: "laser",
-          orientation: "horizontal",
-          x: WIDTH * 0.1,
-          y: HEIGHT * 0.75,
-          length: WIDTH * 0.8,
-          thickness: 10,
-          cycle: 3.8,
-          activeTime: 1.8,
-          phase: 1.9
-        },
-        {
-          type: "laser",
-          orientation: "vertical",
-          x: WIDTH * 0.25,
-          y: HEIGHT * 0.1,
-          length: HEIGHT * 0.8,
-          thickness: 10,
-          cycle: 4.6,
-          activeTime: 2.2,
-          phase: 0.8
-        },
-        {
-          type: "laser",
-          orientation: "vertical",
-          x: WIDTH * 0.75,
-          y: HEIGHT * 0.1,
-          length: HEIGHT * 0.8,
-          thickness: 10,
-          cycle: 4.6,
-          activeTime: 2.2,
-          phase: 3.1
-        },
-        {
-          type: "blade",
-          cx: WIDTH / 2,
-          cy: HEIGHT / 2,
-          orbitRadius: 160,
-          angularSpeed: 1.8,
-          bladeRadius: 20,
-          startAngle: 0
-        },
-        {
-          type: "blade",
-          cx: WIDTH / 2,
-          cy: HEIGHT / 2,
-          orbitRadius: 160,
-          angularSpeed: -1.8,
-          bladeRadius: 20,
-          startAngle: Math.PI
-        },
-        {
-          type: "wall",
-          x: 0,
-          y: 0,
-          w: 120,
-          h: 60
-        },
-        {
-          type: "wall",
-          x: WIDTH - 120,
-          y: 0,
-          w: 120,
-          h: 60
-        },
-        {
-          type: "wall",
-          x: 0,
-          y: HEIGHT - 60,
-          w: 120,
-          h: 60
-        },
-        {
-          type: "wall",
-          x: WIDTH - 120,
-          y: HEIGHT - 60,
-          w: 120,
-          h: 60
-        }
+        { type: "laser", orientation: "horizontal", x: WIDTH * 0.1,  y: HEIGHT * 0.25, length: WIDTH * 0.8, thickness: 10, cycle: 3.8, activeTime: 1.8, phase: 0 },
+        { type: "laser", orientation: "horizontal", x: WIDTH * 0.1,  y: HEIGHT * 0.75, length: WIDTH * 0.8, thickness: 10, cycle: 3.8, activeTime: 1.8, phase: 1.9 },
+        { type: "laser", orientation: "vertical",   x: WIDTH * 0.25, y: HEIGHT * 0.1,  length: HEIGHT * 0.8, thickness: 10, cycle: 4.6, activeTime: 2.2, phase: 0.8 },
+        { type: "laser", orientation: "vertical",   x: WIDTH * 0.75, y: HEIGHT * 0.1,  length: HEIGHT * 0.8, thickness: 10, cycle: 4.6, activeTime: 2.2, phase: 3.1 },
+        { type: "blade", cx: WIDTH / 2, cy: HEIGHT / 2, orbitRadius: 160, angularSpeed: 1.8,  bladeRadius: 20, startAngle: 0 },
+        { type: "blade", cx: WIDTH / 2, cy: HEIGHT / 2, orbitRadius: 160, angularSpeed: -1.8, bladeRadius: 20, startAngle: Math.PI },
+        { type: "wall", x: 0, y: 0, w: 120, h: 60 },
+        { type: "wall", x: WIDTH - 120, y: 0, w: 120, h: 60 },
+        { type: "wall", x: 0, y: HEIGHT - 60, w: 120, h: 60 },
+        { type: "wall", x: WIDTH - 120, y: HEIGHT - 60, w: 120, h: 60 }
       ]
     }
   ];
@@ -754,15 +500,12 @@
   function damageEnemyAt(index, amount) {
     const e = enemies[index];
     if (!e) return;
-
     e.health -= amount;
-
     if (e.health <= 0) {
       const wasBoss = e.isBoss;
       spawnParticles(e.x, e.y, e.color, wasBoss ? 40 : 18);
       maybeSpawnPowerUp(e.x, e.y);
       enemies.splice(index, 1);
-
       game.score += wasBoss ? 250 : 35;
 
       if (wasBoss) {
@@ -770,11 +513,8 @@
         onBossDefeated();
       } else {
         if (!game.bossSpawned && enemies.length === 0) {
-          if (game.wave < game.normalWaves) {
-            spawnNextWave();
-          } else {
-            spawnBoss();
-          }
+          if (game.wave < game.normalWaves) spawnNextWave();
+          else spawnBoss();
         }
       }
     }
@@ -788,10 +528,7 @@
     player.health -= amount;
     player.color = "#ef4444";
     player.invulnerableTimer = 0.35;
-
-    if (player.health <= 0) {
-      killPlayer();
-    }
+    if (player.health <= 0) killPlayer();
   }
 
   // ---------- Particles / FX ----------
@@ -800,8 +537,7 @@
       const angle = Math.random() * TAU;
       const speed = randRange(50, 220);
       particles.push({
-        x,
-        y,
+        x, y,
         vx: Math.cos(angle) * speed,
         vy: Math.sin(angle) * speed,
         life: randRange(0.3, 0.7),
@@ -828,8 +564,7 @@
     if (Math.random() < 0.18) {
       const t = powerUpTypes[Math.floor(Math.random() * powerUpTypes.length)];
       powerUps.push({
-        x,
-        y,
+        x, y,
         radius: 10,
         type: t.type,
         color: t.color,
@@ -856,10 +591,7 @@
     for (let i = powerUps.length - 1; i >= 0; i--) {
       const p = powerUps[i];
       p.life -= dt;
-      if (p.life <= 0) {
-        powerUps.splice(i, 1);
-        continue;
-      }
+      if (p.life <= 0) { powerUps.splice(i, 1); continue; }
       if (game.state === "playing" && player.alive && dist(p, player) < p.radius + player.radius) {
         applyPowerUp(p);
         powerUps.splice(i, 1);
@@ -889,29 +621,14 @@
       b.x += b.vx * dt;
       b.y += b.vy * dt;
       b.life -= dt;
-      if (
-        b.life <= 0 ||
-        b.x < -30 ||
-        b.x > WIDTH + 30 ||
-        b.y < -30 ||
-        b.y > HEIGHT + 30
-      ) {
+      if (b.life <= 0 || b.x < -30 || b.x > WIDTH + 30 || b.y < -30 || b.y > HEIGHT + 30) {
         bullets.splice(i, 1);
       }
     }
   }
 
   function spawnEnemyBullet(e, angle, speed, color, damage, life = 2.5, radius = 4) {
-    enemyBullets.push({
-      x: e.x,
-      y: e.y,
-      vx: Math.cos(angle) * speed,
-      vy: Math.sin(angle) * speed,
-      radius,
-      color,
-      damage,
-      life
-    });
+    enemyBullets.push({ x: e.x, y: e.y, vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed, radius, color, damage, life });
   }
 
   function updateEnemyBullets(dt, doCollisions) {
@@ -920,13 +637,7 @@
       b.x += b.vx * dt;
       b.y += b.vy * dt;
       b.life -= dt;
-      if (
-        b.life <= 0 ||
-        b.x < -40 ||
-        b.x > WIDTH + 40 ||
-        b.y < -40 ||
-        b.y > HEIGHT + 40
-      ) {
+      if (b.life <= 0 || b.x < -40 || b.x > WIDTH + 40 || b.y < -40 || b.y > HEIGHT + 40) {
         enemyBullets.splice(i, 1);
         continue;
       }
@@ -946,14 +657,8 @@
     const src = level.hazards || [];
     for (const h of src) {
       const copy = { ...h };
-      if (copy.type === "laser") {
-        copy.timer = copy.phase || 0;
-        copy.active = false;
-      } else if (copy.type === "blade") {
-        copy.angle = copy.startAngle || 0;
-        copy.x = copy.cx;
-        copy.y = copy.cy;
-      }
+      if (copy.type === "laser") { copy.timer = copy.phase || 0; copy.active = false; }
+      else if (copy.type === "blade") { copy.angle = copy.startAngle || 0; copy.x = copy.cx; copy.y = copy.cy; }
       game.hazards.push(copy);
     }
   }
@@ -963,67 +668,38 @@
     const dmgPerSecondBlade = 15;
 
     for (const h of game.hazards) {
-
       if (h.type === "laser") {
         h.timer += dt;
         const t = h.timer % h.cycle;
         h.active = t < h.activeTime;
-
         if (!h.active) continue;
 
         if (game.state === "playing" && player.alive) {
-
           if (h.orientation === "horizontal") {
-            const rx = h.x;
-            const ry = h.y - h.thickness / 2;
-            const rw = h.length;
-            const rh = h.thickness;
-
-            if (circleRectCollision(player.x, player.y, player.radius, rx, ry, rw, rh)) {
-              applyDamage(dmgPerSecondLaser * dt);
-            }
-
-          } else if (h.orientation === "vertical") {
-            const rx = h.x - h.thickness / 2;
-            const ry = h.y;
-            const rw = h.thickness;
-            const rh = h.length;
-
-            if (circleRectCollision(player.x, player.y, player.radius, rx, ry, rw, rh)) {
-              applyDamage(dmgPerSecondLaser * dt);
-            }
+            const rx = h.x, ry = h.y - h.thickness / 2, rw = h.length, rh = h.thickness;
+            if (circleRectCollision(player.x, player.y, player.radius, rx, ry, rw, rh)) applyDamage(dmgPerSecondLaser * dt);
+          } else {
+            const rx = h.x - h.thickness / 2, ry = h.y, rw = h.thickness, rh = h.length;
+            if (circleRectCollision(player.x, player.y, player.radius, rx, ry, rw, rh)) applyDamage(dmgPerSecondLaser * dt);
           }
         }
 
+        // enemies take more laser damage
         if (h.orientation === "horizontal") {
-          const rx = h.x;
-          const ry = h.y - h.thickness / 2;
-          const rw = h.length;
-          const rh = h.thickness;
-
+          const rx = h.x, ry = h.y - h.thickness / 2, rw = h.length, rh = h.thickness;
           for (let i = enemies.length - 1; i >= 0; i--) {
             const e = enemies[i];
-            if (circleRectCollision(e.x, e.y, e.radius, rx, ry, rw, rh)) {
-              damageEnemyAt(i, dmgPerSecondLaser * dt * 3);
-            }
+            if (circleRectCollision(e.x, e.y, e.radius, rx, ry, rw, rh)) damageEnemyAt(i, dmgPerSecondLaser * dt * 3);
           }
-
-        } else if (h.orientation === "vertical") {
-          const rx = h.x - h.thickness / 2;
-          const ry = h.y;
-          const rw = h.thickness;
-          const rh = h.length;
-
+        } else {
+          const rx = h.x - h.thickness / 2, ry = h.y, rw = h.thickness, rh = h.length;
           for (let i = enemies.length - 1; i >= 0; i--) {
             const e = enemies[i];
-            if (circleRectCollision(e.x, e.y, e.radius, rx, ry, rw, rh)) {
-              damageEnemyAt(i, dmgPerSecondLaser * dt * 3);
-            }
+            if (circleRectCollision(e.x, e.y, e.radius, rx, ry, rw, rh)) damageEnemyAt(i, dmgPerSecondLaser * dt * 3);
           }
         }
 
       } else if (h.type === "blade") {
-
         h.angle += (h.angularSpeed || 1) * dt;
         h.x = h.cx + Math.cos(h.angle) * h.orbitRadius;
         h.y = h.cy + Math.sin(h.angle) * h.orbitRadius;
@@ -1031,33 +707,21 @@
         const bladeRadius = h.bladeRadius || 16;
 
         if (game.state === "playing" && player.alive) {
-          if (dist({ x: h.x, y: h.y }, player) < bladeRadius + player.radius) {
-            applyDamage(dmgPerSecondBlade * dt);
-          }
+          if (dist({ x: h.x, y: h.y }, player) < bladeRadius + player.radius) applyDamage(dmgPerSecondBlade * dt);
         }
 
         for (let i = enemies.length - 1; i >= 0; i--) {
           const e = enemies[i];
-          if (dist({ x: h.x, y: h.y }, e) < bladeRadius + e.radius) {
-            damageEnemyAt(i, dmgPerSecondBlade * dt * 3);
-          }
+          if (dist({ x: h.x, y: h.y }, e) < bladeRadius + e.radius) damageEnemyAt(i, dmgPerSecondBlade * dt * 3);
         }
-
-      } else if (h.type === "wall") {
-        // only used for blocking movement in resolvePlayerWalls()
       }
     }
   }
 
   function resolvePlayerWalls() {
-    if (!game.levelConfig || !game.levelConfig.hazards) return;
     for (const h of game.hazards) {
       if (h.type !== "wall") continue;
-      const rx = h.x;
-      const ry = h.y;
-      const rw = h.w;
-      const rh = h.h;
-      if (circleRectCollision(player.x, player.y, player.radius, rx, ry, rw, rh)) {
+      if (circleRectCollision(player.x, player.y, player.radius, h.x, h.y, h.w, h.h)) {
         player.x = player.prevX;
         player.y = player.prevY;
         return;
@@ -1077,35 +741,20 @@
         ctx.strokeRect(h.x, h.y, h.w, h.h);
         ctx.restore();
       } else if (h.type === "laser") {
-        const active = h.active;
         ctx.save();
+        const active = h.active;
         const baseColor = active ? "#f97373" : "#4b5563";
         ctx.fillStyle = active ? "rgba(248,113,113,0.55)" : "rgba(55,65,81,0.45)";
         ctx.strokeStyle = baseColor;
         ctx.lineWidth = 2;
 
         if (h.orientation === "horizontal") {
-          const rx = h.x;
-          const ry = h.y - h.thickness / 2;
-          const rw = h.length;
-          const rh = h.thickness;
-          ctx.fillRect(rx, ry, rw, rh);
-          ctx.strokeRect(rx, ry, rw, rh);
+          ctx.fillRect(h.x, h.y - h.thickness / 2, h.length, h.thickness);
+          ctx.strokeRect(h.x, h.y - h.thickness / 2, h.length, h.thickness);
         } else {
-          const rx = h.x - h.thickness / 2;
-          const ry = h.y;
-          const rw = h.thickness;
-          const rh = h.length;
-          ctx.fillRect(rx, ry, rw, rh);
-          ctx.strokeRect(rx, ry, rw, rh);
+          ctx.fillRect(h.x - h.thickness / 2, h.y, h.thickness, h.length);
+          ctx.strokeRect(h.x - h.thickness / 2, h.y, h.thickness, h.length);
         }
-
-        if (active) {
-          ctx.globalAlpha = 0.35;
-          ctx.shadowColor = "#fecaca";
-          ctx.shadowBlur = 16;
-        }
-
         ctx.restore();
       } else if (h.type === "blade") {
         ctx.save();
@@ -1129,14 +778,13 @@
         ctx.beginPath();
         ctx.arc(h.x, h.y, r, 0, TAU);
         ctx.fill();
-
         ctx.restore();
       }
     }
   }
 
   // ---------- Enemies & waves ----------
-  function spawnEnemyOfRandomType(level) {
+  function spawnEnemyOfRandomType() {
     const r = Math.random();
     let type;
     if (r < 0.45) type = enemyTypes[0];
@@ -1146,26 +794,16 @@
 
     let x, y;
     const edge = Math.floor(Math.random() * 4);
-    if (edge === 0) {
-      x = -20;
-      y = randRange(0, HEIGHT);
-    } else if (edge === 1) {
-      x = WIDTH + 20;
-      y = randRange(0, HEIGHT);
-    } else if (edge === 2) {
-      x = randRange(0, WIDTH);
-      y = -20;
-    } else {
-      x = randRange(0, WIDTH);
-      y = HEIGHT + 20;
-    }
+    if (edge === 0) { x = -20; y = randRange(0, HEIGHT); }
+    else if (edge === 1) { x = WIDTH + 20; y = randRange(0, HEIGHT); }
+    else if (edge === 2) { x = randRange(0, WIDTH); y = -20; }
+    else { x = randRange(0, WIDTH); y = HEIGHT + 20; }
 
     const hpMul = 1 + game.wave * 0.2;
     const spMul = 1 + game.wave * 0.08;
 
     enemies.push({
-      x,
-      y,
+      x, y,
       radius: type.radius,
       color: type.color,
       speed: type.speed * spMul,
@@ -1181,17 +819,13 @@
 
   function spawnNextWave() {
     const level = game.levelConfig;
-    if (!level) return;
     game.wave++;
     const count = level.enemiesPerWave + Math.floor(game.wave * level.waveScale);
-    for (let i = 0; i < count; i++) {
-      spawnEnemyOfRandomType(level);
-    }
+    for (let i = 0; i < count; i++) spawnEnemyOfRandomType();
   }
 
   function spawnBoss() {
     const level = game.levelConfig;
-    if (!level) return;
     game.bossSpawned = true;
     game.bossAlive = true;
 
@@ -1200,21 +834,17 @@
     const x = WIDTH / 2 + Math.cos(angle) * distEdge;
     const y = HEIGHT / 2 + Math.sin(angle) * distEdge;
 
-    const bossHp = level.bossHp;
-    const bossShootInterval = bossBase.shootInterval * level.bossShootMultiplier;
-
     enemies.push({
-      x,
-      y,
+      x, y,
       radius: bossBase.radius,
       color: bossBase.color,
       speed: bossBase.speed,
-      health: bossHp,
-      maxHealth: bossHp,
+      health: level.bossHp,
+      maxHealth: level.bossHp,
       damage: bossBase.damage,
       type: bossBase.name,
       isBoss: true,
-      shootInterval: bossShootInterval,
+      shootInterval: bossBase.shootInterval * level.bossShootMultiplier,
       shootCooldown: 2.0
     });
   }
@@ -1229,6 +859,7 @@
         const dx = player.x - e.x;
         const dy = player.y - e.y;
         const baseAngle = Math.atan2(dy, dx);
+
         const aimedCount = 3;
         const spread = 0.35;
         for (let i = 0; i < aimedCount; i++) {
@@ -1241,6 +872,7 @@
           spawnEnemyBullet(e, a, 190, "#fb7185", 10, 2.8, 4);
         }
         e.shootCooldown = e.shootInterval;
+
       } else if (e.type === "shooter") {
         const dx = player.x - e.x;
         const dy = player.y - e.y;
@@ -1259,17 +891,12 @@
         const dx = player.x - e.x;
         const dy = player.y - e.y;
         const d = Math.hypot(dx, dy) || 1;
-        const vx = (dx / d) * e.speed;
-        const vy = (dy / d) * e.speed;
-        e.x += vx * dt;
-        e.y += vy * dt;
+        e.x += (dx / d) * e.speed * dt;
+        e.y += (dy / d) * e.speed * dt;
       }
 
       if (game.state === "playing" && player.alive) {
-        const pd = dist(e, player);
-        if (pd < e.radius + player.radius) {
-          applyDamage(e.damage * 0.3);
-        }
+        if (dist(e, player) < e.radius + player.radius) applyDamage(e.damage * 0.3);
       }
     }
   }
@@ -1339,30 +966,16 @@
 
     if (player.speedBoostTimer > 0) {
       player.speedBoostTimer -= dt;
-      if (player.speedBoostTimer <= 0) {
-        player.speedBoostTimer = 0;
-        player.speed = player.baseSpeed;
-      }
+      if (player.speedBoostTimer <= 0) { player.speedBoostTimer = 0; player.speed = player.baseSpeed; }
     }
     if (player.rapidFireTimer > 0) {
       player.rapidFireTimer -= dt;
-      if (player.rapidFireTimer <= 0) {
-        player.rapidFireTimer = 0;
-        player.fireRate = player.fireRateBase;
-      }
+      if (player.rapidFireTimer <= 0) { player.rapidFireTimer = 0; player.fireRate = player.fireRateBase; }
     }
-    if (player.dashCooldown > 0) {
-      player.dashCooldown -= dt;
-      if (player.dashCooldown < 0) player.dashCooldown = 0;
-    }
-    if (player.invulnerableTimer > 0) {
-      player.invulnerableTimer -= dt;
-      if (player.invulnerableTimer < 0) player.invulnerableTimer = 0;
-    }
+    if (player.dashCooldown > 0) { player.dashCooldown = Math.max(0, player.dashCooldown - dt); }
+    if (player.invulnerableTimer > 0) { player.invulnerableTimer = Math.max(0, player.invulnerableTimer - dt); }
 
-    const dxAim = mouse.x - player.x;
-    const dyAim = mouse.y - player.y;
-    player.angle = Math.atan2(dyAim, dxAim);
+    player.angle = Math.atan2(mouse.y - player.y, mouse.x - player.x);
 
     player.prevX = player.x;
     player.prevY = player.y;
@@ -1397,23 +1010,16 @@
       player.fireCooldown = player.fireRate;
     }
 
-    if (player.invulnerableTimer <= 0) {
-      player.color = "#38bdf8";
-    }
+    if (player.invulnerableTimer <= 0) player.color = "#38bdf8";
   }
 
   // ---------- Level / Campaign ----------
   function resetForLevel() {
-    bullets.length = 0;
-    enemies.length = 0;
-    enemyBullets.length = 0;
-    powerUps.length = 0;
-    particles.length = 0;
+    bullets.length = 0; enemies.length = 0; enemyBullets.length = 0;
+    powerUps.length = 0; particles.length = 0;
 
-    player.x = WIDTH / 2;
-    player.y = HEIGHT / 2;
-    player.prevX = player.x;
-    player.prevY = player.y;
+    player.x = WIDTH / 2; player.y = HEIGHT / 2;
+    player.prevX = player.x; player.prevY = player.y;
     player.health = player.maxHealth;
     player.alive = true;
     player.speed = player.baseSpeed;
@@ -1442,13 +1048,8 @@
     game.state = "playing";
   }
 
-  function goToMap() {
-    game.state = "map";
-  }
-
-  function goToMenu() {
-    game.state = "menu";
-  }
+  function goToMap() { game.state = "map"; }
+  function goToMenu() { game.state = "menu"; }
 
   // ---------- Update loop ----------
   function update(dt) {
@@ -1480,18 +1081,8 @@
     ctx.strokeStyle = "#111827";
     ctx.lineWidth = 1;
     const gridSize = 40;
-    for (let x = 0; x < WIDTH; x += gridSize) {
-      ctx.beginPath();
-      ctx.moveTo(x, 0);
-      ctx.lineTo(x, HEIGHT);
-      ctx.stroke();
-    }
-    for (let y = 0; y < HEIGHT; y += gridSize) {
-      ctx.beginPath();
-      ctx.moveTo(0, y);
-      ctx.lineTo(WIDTH, y);
-      ctx.stroke();
-    }
+    for (let x = 0; x < WIDTH; x += gridSize) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, HEIGHT); ctx.stroke(); }
+    for (let y = 0; y < HEIGHT; y += gridSize) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(WIDTH, y); ctx.stroke(); }
     ctx.restore();
   }
 
@@ -1509,17 +1100,10 @@
 
     ctx.font = "14px system-ui";
     ctx.fillStyle = "#9ca3af";
-    ctx.fillText(
-      "Click a level card to start. Levels unlock as you beat bosses.",
-      WIDTH / 2,
-      60
-    );
+    ctx.fillText("Click a level card to start. Levels unlock as you beat bosses.", WIDTH / 2, 60);
 
     const levels = game.levels;
-    const cardW = 280;
-    const cardH = 100;
-    const gap = 24;
-    const cols = 2;
+    const cardW = 280, cardH = 100, gap = 24, cols = 2;
     const rows = Math.ceil(levels.length / cols);
     const totalW = cols * cardW + (cols - 1) * gap;
     const startX = (WIDTH - totalW) / 2;
@@ -1536,7 +1120,6 @@
       const y = startY + row * (cardH + gap);
 
       game.mapRects[i] = { x, y, w: cardW, h: cardH };
-
       const unlocked = i < progress.unlocked;
 
       ctx.save();
@@ -1548,6 +1131,7 @@
       } else {
         ctx.fillStyle = "rgba(15,23,42,0.9)";
       }
+
       ctx.strokeStyle = unlocked ? level.color : "#374151";
       ctx.lineWidth = 2;
       ctx.beginPath();
@@ -1563,25 +1147,16 @@
 
       ctx.font = "12px system-ui";
       ctx.fillStyle = "#cbd5f5";
-      const descMax = 42;
       let desc = level.description;
-      if (desc.length > descMax) desc = desc.slice(0, descMax - 3) + "...";
+      if (desc.length > 42) desc = desc.slice(0, 39) + "...";
       ctx.fillText(desc, x + 12, y + 34);
 
       ctx.fillStyle = "#9ca3af";
-      ctx.fillText(
-        `Waves: ${level.normalWaves} · Boss HP: ${level.bossHp}`,
-        x + 12,
-        y + 54
-      );
+      ctx.fillText(`Waves: ${level.normalWaves} · Boss HP: ${level.bossHp}`, x + 12, y + 54);
 
       ctx.textAlign = "right";
       ctx.fillStyle = unlocked ? "#22c55e" : "#6b7280";
-      ctx.fillText(
-        unlocked ? "Unlocked" : "Locked",
-        x + cardW - 12,
-        y + cardH - 20
-      );
+      ctx.fillText(unlocked ? "Unlocked" : "Locked", x + cardW - 12, y + cardH - 20);
 
       if (!unlocked) {
         ctx.fillStyle = "rgba(15,23,42,0.8)";
@@ -1598,25 +1173,18 @@
     ctx.fillStyle = "#9ca3af";
     ctx.textAlign = "center";
     ctx.font = "11px system-ui";
-    ctx.fillText(
-      "Press M to return to main title",
-      WIDTH / 2,
-      HEIGHT - 26
-    );
+    ctx.fillText("Press M to return to main title", WIDTH / 2, HEIGHT - 26);
     ctx.restore();
   }
 
   function drawPlayingScene() {
     drawBackgroundGrid();
-
     drawHazards();
 
     for (const p of particles) {
       ctx.globalAlpha = clamp(p.life, 0, 1);
       ctx.fillStyle = p.color;
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, p.radius, 0, TAU);
-      ctx.fill();
+      ctx.beginPath(); ctx.arc(p.x, p.y, p.radius, 0, TAU); ctx.fill();
     }
     ctx.globalAlpha = 1;
 
@@ -1625,10 +1193,7 @@
       ctx.strokeStyle = pu.color;
       ctx.fillStyle = "rgba(15,23,42,0.9)";
       ctx.lineWidth = 2;
-      ctx.beginPath();
-      ctx.arc(pu.x, pu.y, pu.radius, 0, TAU);
-      ctx.fill();
-      ctx.stroke();
+      ctx.beginPath(); ctx.arc(pu.x, pu.y, pu.radius, 0, TAU); ctx.fill(); ctx.stroke();
       ctx.fillStyle = pu.color;
       ctx.font = "9px system-ui";
       ctx.textAlign = "center";
@@ -1640,72 +1205,46 @@
     for (const b of enemyBullets) {
       ctx.save();
       ctx.fillStyle = b.color;
-      ctx.beginPath();
-      ctx.arc(b.x, b.y, b.radius, 0, TAU);
-      ctx.fill();
+      ctx.beginPath(); ctx.arc(b.x, b.y, b.radius, 0, TAU); ctx.fill();
       ctx.restore();
     }
 
     for (const e of enemies) {
       ctx.save();
       ctx.fillStyle = e.color;
-      ctx.beginPath();
-      ctx.arc(e.x, e.y, e.radius, 0, TAU);
-      ctx.fill();
+      ctx.beginPath(); ctx.arc(e.x, e.y, e.radius, 0, TAU); ctx.fill();
 
       ctx.fillStyle = "#020617";
       ctx.fillRect(e.x - e.radius, e.y - e.radius - 6, e.radius * 2, 3);
       ctx.fillStyle = e.isBoss ? "#fb7185" : "#f97316";
       const hpRatio = clamp(e.health / e.maxHealth, 0, 1);
-      ctx.fillRect(
-        e.x - e.radius,
-        e.y - e.radius - 6,
-        e.radius * 2 * hpRatio,
-        3
-      );
+      ctx.fillRect(e.x - e.radius, e.y - e.radius - 6, e.radius * 2 * hpRatio, 3);
       ctx.restore();
     }
 
     for (const b of bullets) {
       ctx.save();
       ctx.fillStyle = b.color;
-      ctx.beginPath();
-      ctx.arc(b.x, b.y, b.radius, 0, TAU);
-      ctx.fill();
+      ctx.beginPath(); ctx.arc(b.x, b.y, b.radius, 0, TAU); ctx.fill();
       ctx.restore();
     }
 
     if (player.alive) {
       ctx.save();
-      const gradient = ctx.createRadialGradient(
-        player.x,
-        player.y,
-        0,
-        player.x,
-        player.y,
-        40
-      );
+      const gradient = ctx.createRadialGradient(player.x, player.y, 0, player.x, player.y, 40);
       gradient.addColorStop(0, "rgba(56,189,248,0.5)");
       gradient.addColorStop(1, "rgba(56,189,248,0)");
       ctx.fillStyle = gradient;
-      ctx.beginPath();
-      ctx.arc(player.x, player.y, 40, 0, TAU);
-      ctx.fill();
+      ctx.beginPath(); ctx.arc(player.x, player.y, 40, 0, TAU); ctx.fill();
 
       ctx.translate(player.x, player.y);
       ctx.rotate(player.angle);
       ctx.fillStyle = player.color;
-      ctx.beginPath();
-      ctx.arc(0, 0, player.radius, 0, TAU);
-      ctx.fill();
+      ctx.beginPath(); ctx.arc(0, 0, player.radius, 0, TAU); ctx.fill();
 
       ctx.strokeStyle = "#e0f2fe";
       ctx.lineWidth = 4;
-      ctx.beginPath();
-      ctx.moveTo(0, 0);
-      ctx.lineTo(player.radius + 10, 0);
-      ctx.stroke();
-
+      ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(player.radius + 10, 0); ctx.stroke();
       ctx.restore();
     }
   }
@@ -1713,10 +1252,8 @@
   function drawUI() {
     const level = game.levelConfig;
 
-    const barWidth = 240;
-    const barHeight = 14;
-    const x = 20;
-    const y = 20;
+    const barWidth = 240, barHeight = 14;
+    const x = 20, y = 20;
     const ratio = clamp(player.health / player.maxHealth, 0, 1);
 
     ctx.save();
@@ -1746,8 +1283,7 @@
       ctx.font = "11px system-ui";
       ctx.fillText(
         `Wave ${game.wave} / ${game.normalWaves} · Boss: ${game.bossSpawned ? (game.bossAlive ? "ENGAGED" : "DEFEATED") : "Not yet"}`,
-        WIDTH / 2,
-        34
+        WIDTH / 2, 34
       );
     }
 
@@ -1762,17 +1298,10 @@
     ctx.fillText(`Score: ${game.score}`, scoreX, scoreY);
     ctx.fillText(`Best: ${game.highScore}`, scoreX, scoreY + 16);
 
-    const dashX = 20;
-    const dashY = 48;
-    const dashW = 140;
-    const dashH = 8;
-
+    const dashX = 20, dashY = 48, dashW = 140, dashH = 8;
     ctx.fillStyle = "#020617";
     ctx.fillRect(dashX, dashY, dashW, dashH);
-    const dashRatio =
-      player.dashCooldownMax === 0
-        ? 1
-        : 1 - player.dashCooldown / player.dashCooldownMax;
+    const dashRatio = player.dashCooldownMax === 0 ? 1 : 1 - player.dashCooldown / player.dashCooldownMax;
     ctx.fillStyle = "#38bdf8";
     ctx.fillRect(dashX, dashY, dashW * clamp(dashRatio, 0, 1), dashH);
     ctx.strokeStyle = "#111827";
@@ -1785,34 +1314,14 @@
     let py = 70;
     ctx.textAlign = "left";
     ctx.font = "11px system-ui";
-    if (player.speedBoostTimer > 0) {
-      ctx.fillStyle = "#6366f1";
-      ctx.fillText(
-        `Speed: ${player.speedBoostTimer.toFixed(1)}s`,
-        20,
-        py
-      );
-      py += 14;
-    }
-    if (player.rapidFireTimer > 0) {
-      ctx.fillStyle = "#ec4899";
-      ctx.fillText(
-        `Rapid Fire: ${player.rapidFireTimer.toFixed(1)}s`,
-        20,
-        py
-      );
-      py += 14;
-    }
+    if (player.speedBoostTimer > 0) { ctx.fillStyle = "#6366f1"; ctx.fillText(`Speed: ${player.speedBoostTimer.toFixed(1)}s`, 20, py); py += 14; }
+    if (player.rapidFireTimer > 0) { ctx.fillStyle = "#ec4899"; ctx.fillText(`Rapid Fire: ${player.rapidFireTimer.toFixed(1)}s`, 20, py); py += 14; }
 
     ctx.restore();
   }
 
   function drawMenuButton() {
-    const w = 150;
-    const h = 36;
-    const x = WIDTH - w - 20;
-    const y = 20;
-
+    const w = 150, h = 36, x = WIDTH - w - 20, y = 20;
     menuButton = { x, y, w, h };
 
     ctx.save();
@@ -1833,11 +1342,7 @@
   }
 
   function drawHomeButton() {
-    const w = 150;
-    const h = 36;
-    const x = WIDTH - w - 20;
-    const y = 105;
-
+    const w = 150, h = 36, x = WIDTH - w - 20, y = 105;
     homeButton = { x, y, w, h };
 
     ctx.save();
@@ -1871,21 +1376,9 @@
       ctx.font = "30px system-ui";
       ctx.fillText("NEON ARENA – CAMPAIGN", WIDTH / 2, HEIGHT / 2 - 60);
       ctx.font = "15px system-ui";
-      ctx.fillText(
-        "Top-down survival shooter with levels, bosses, hazards and dash.",
-        WIDTH / 2,
-        HEIGHT / 2 - 20
-      );
-      ctx.fillText(
-        "Press ENTER or CLICK to open the campaign map",
-        WIDTH / 2,
-        HEIGHT / 2 + 20
-      );
-      ctx.fillText(
-        "Move: WASD / Arrows · Shoot: Mouse · Dash: Space / Shift · Pause: P",
-        WIDTH / 2,
-        HEIGHT / 2 + 50
-      );
+      ctx.fillText("Top-down survival shooter with levels, bosses, hazards and dash.", WIDTH / 2, HEIGHT / 2 - 20);
+      ctx.fillText("Press ENTER or CLICK to open the campaign map", WIDTH / 2, HEIGHT / 2 + 20);
+      ctx.fillText("Move: WASD / Arrows · Shoot: Mouse/touch hold · Dash: Space / Shift · Pause: P", WIDTH / 2, HEIGHT / 2 + 50);
     }
 
     if (game.state === "paused") {
@@ -1908,16 +1401,8 @@
       ctx.font = "16px system-ui";
       ctx.fillText(`Score: ${game.score}`, WIDTH / 2, HEIGHT / 2 - 24);
       ctx.fillText(`Best: ${game.highScore}`, WIDTH / 2, HEIGHT / 2 + 0);
-      ctx.fillText(
-        "Press ENTER to retry this level",
-        WIDTH / 2,
-        HEIGHT / 2 + 36
-      );
-      ctx.fillText(
-        "Press M for campaign map",
-        WIDTH / 2,
-        HEIGHT / 2 + 60
-      );
+      ctx.fillText("Press ENTER to retry this level", WIDTH / 2, HEIGHT / 2 + 36);
+      ctx.fillText("Press M for campaign map", WIDTH / 2, HEIGHT / 2 + 60);
     }
 
     if (game.state === "levelcomplete") {
@@ -1928,35 +1413,19 @@
       ctx.fillText("LEVEL COMPLETE!", WIDTH / 2, HEIGHT / 2 - 60);
       ctx.fillStyle = "#e5e7eb";
       ctx.font = "16px system-ui";
-      ctx.fillText(
-        `${game.levelConfig ? game.levelConfig.name : ""} cleared`,
-        WIDTH / 2,
-        HEIGHT / 2 - 24
-      );
+      ctx.fillText(`${game.levelConfig ? game.levelConfig.name : ""} cleared`, WIDTH / 2, HEIGHT / 2 - 24);
       ctx.fillText(`Score: ${game.score}`, WIDTH / 2, HEIGHT / 2 + 2);
 
       const nextIndex = game.currentLevelIndex + 1;
       const hasNext = nextIndex < game.levels.length;
-
-      ctx.fillText(
-        hasNext ? "Press ENTER for next level" : "All levels complete!",
-        WIDTH / 2,
-        HEIGHT / 2 + 36
-      );
-      ctx.fillText(
-        "Press M for campaign map",
-        WIDTH / 2,
-        HEIGHT / 2 + 60
-      );
+      ctx.fillText(hasNext ? "Press ENTER for next level" : "All levels complete!", WIDTH / 2, HEIGHT / 2 + 36);
+      ctx.fillText("Press M for campaign map", WIDTH / 2, HEIGHT / 2 + 60);
     }
 
     if (game.state === "playing" && game.showHelp) {
       ctx.globalAlpha = 0.8;
       ctx.fillStyle = "#020617";
-      const w = 310;
-      const h = 104;
-      const x = WIDTH - w - 15;
-      const y = HEIGHT - h - 15;
+      const w = 310, h = 104, x = WIDTH - w - 15, y = HEIGHT - h - 15;
       ctx.fillRect(x, y, w, h);
       ctx.strokeStyle = "#1f2937";
       ctx.strokeRect(x, y, w, h);
@@ -1968,16 +1437,13 @@
       const lines = [
         "Controls:",
         "Move: WASD / Arrow Keys",
-        "Aim: Mouse · Shoot: Left Click",
-        "Dash: Space / Shift (short invulnerable burst)",
+        "Aim: Mouse/touch · Shoot: Hold",
+        "Dash: Space / Shift",
         "Avoid lasers, rotating blades and walls!",
         "Pause: P · Toggle this help: H"
       ];
       let ty = y + 16;
-      for (const line of lines) {
-        ctx.fillText(line, x + 10, ty);
-        ty += 14;
-      }
+      for (const line of lines) { ctx.fillText(line, x + 10, ty); ty += 14; }
     }
 
     ctx.restore();
@@ -1985,21 +1451,11 @@
 
   function draw() {
     ctx.clearRect(0, 0, WIDTH, HEIGHT);
-
     menuButton = null;
     homeButton = null;
 
-    if (game.state === "map") {
-      drawMapScreen();
-      drawMenuButton();
-      drawHomeButton();
-      return;
-    }
-
-    if (game.state === "menu") {
-      drawOverlays();
-      return;
-    }
+    if (game.state === "map") { drawMapScreen(); drawMenuButton(); drawHomeButton(); return; }
+    if (game.state === "menu") { drawOverlays(); return; }
 
     drawPlayingScene();
     drawUI();
@@ -2010,21 +1466,19 @@
 
   // ---------- Main loop ----------
   let lastTime = performance.now();
-
   function loop(timestamp) {
     const dt = (timestamp - lastTime) / 1000;
     lastTime = timestamp;
-
     update(dt);
     draw();
-
     requestAnimationFrame(loop);
   }
 
+  // Start at menu
   goToMenu();
   requestAnimationFrame(loop);
 })();
 </script>
-</body>
 
+</body>
 </html>
