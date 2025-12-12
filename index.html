@@ -633,47 +633,46 @@ html, body {
   /* ================== MOBILE OPTIMIZATION ================== */
 @media (max-width: 640px) {
 
-  /* One card per row */
   .grid {
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-    gap: 0.8rem;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.4rem;
   }
 
-  /* Smaller cards */
   .card {
-    padding: 1rem 1.1rem;
+    padding: 0.55rem;
     min-height: auto;
   }
 
-  /* Smaller title */
   .card a {
-    font-size: 1.15rem;
+    font-size: 0.75rem;
+    line-height: 1rem;
   }
 
-  /* Smaller description */
   .card-desc {
-    font-size: 0.82rem;
-    line-height: 1.2rem;
+    font-size: 0.6rem;
+    line-height: 0.9rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 2; /* limit text */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
   }
 
-  /* Smaller tags */
-  .tag {
-    font-size: 0.62rem;
-    padding: 0.12rem 0.4rem;
+  .tag-row {
+    display: none; /* hide tags to save space */
   }
 
-  /* Reduce hover lift on mobile */
+  .badge-new,
+  .badge-most-played {
+    font-size: 0.5rem;
+    padding: 0.1rem 0.3rem;
+  }
+
   .card:hover {
     transform: none;
     box-shadow: none;
   }
-
-  /* Category titles tighter */
-  .category-title {
-    font-size: 1rem;
-    padding: 0.3rem 0.6rem;
-  }
 }
+
 
   </style>
 </head>
@@ -1337,6 +1336,7 @@ html, body {
 
 </body>
 </html>
+
 
 
 
