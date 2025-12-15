@@ -4,13 +4,19 @@
   <meta charset="UTF-8" />
   <title>Neo Runner – Cyber District</title>
   <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+
+  <!-- ✅ AUTO ADS: keep ONLY this one AdSense loader (same as index.html) -->
+  <script async
+    src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5482914432517813"
+    crossorigin="anonymous"></script>
+
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
       background:
-		linear-gradient(135deg, rgba(0,0,0,0.8), rgba(15,23,42,0.9)), /* dark overlay */
-		url("images/hub-bg.jpg") center center / cover no-repeat fixed;
+        linear-gradient(135deg, rgba(0,0,0,0.8), rgba(15,23,42,0.9)),
+        url("images/hub-bg.jpg") center center / cover no-repeat fixed;
       color: #e5e7eb;
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       min-height: 100vh;
@@ -47,6 +53,8 @@
       align-items: center;
       gap: 8px;
       flex: 0 0 auto;
+      width: 100%;
+      max-width: 960px;
     }
 
     .top-banner {
@@ -65,15 +73,55 @@
       padding: 4px;
     }
 
+    /* Header like neon-arena */
+    .game-header {
+      width: 100%;
+      max-width: 960px;
+      padding: 0.55rem 1.0rem;
+      border-radius: 12px;
+      border: 1px solid #111827;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: linear-gradient(135deg, #020617 0, #111827 40%, #0b1120 100%);
+      font-size: 0.9rem;
+      gap: 0.8rem;
+      flex-wrap: wrap;
+    }
+    .game-header .title {
+      font-weight: 700;
+      letter-spacing: 0.03em;
+    }
+    .game-header a {
+      color: #e5e7eb;
+      text-decoration: none;
+      font-size: 0.85rem;
+      padding: 0.35rem 0.75rem;
+      border-radius: 999px;
+      border: 1px solid #374151;
+      background: rgba(2,6,23,0.35);
+    }
+    .game-header a:hover { border-color: #6366f1; }
+
+    .game-wrap {
+      position: relative;
+      width: 100%;
+      max-width: 960px;
+    }
+
     canvas {
       border-radius: 14px;
       border: 1px solid #4b5563;
       background: radial-gradient(circle at top, #020617 0, #020617 55%, #000 100%);
       box-shadow: 0 20px 50px rgba(0,0,0,0.8);
-      max-width: 100%;
+      width: 100%;
       height: auto;
       cursor: crosshair;
       display: block;
+
+      touch-action: none;      /* ✅ critical */
+      user-select: none;       /* ✅ */
+      -webkit-user-select: none;
     }
 
     /* Mobile: hide side banners, keep top */
@@ -89,22 +137,116 @@
         height: 60px;
         font-size: 11px;
       }
+      .game-header { font-size: 0.85rem; padding: 0.5rem 0.7rem; }
+      .game-header a { font-size: 0.8rem; padding: 0.3rem 0.65rem; }
+    }
+
+    /* =========================
+       MOBILE CONTROLS (overlay)
+       ========================= */
+    .mobile-controls {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      display: none;
+    }
+
+    @media (max-width: 900px) {
+      .mobile-controls { display: block; }
+    }
+
+    .mc-joystick {
+      position: absolute;
+      left: 12px;
+      bottom: 12px;
+      width: 140px;
+      height: 140px;
+      border-radius: 999px;
+      background: rgba(2,6,23,0.55);
+      border: 1px solid rgba(148,163,184,0.35);
+      box-shadow: 0 12px 28px rgba(0,0,0,0.55);
+      pointer-events: auto;
+      touch-action: none;
+    }
+
+    .mc-joystick::after {
+      content: "";
+      position: absolute;
+      inset: 18px;
+      border-radius: 999px;
+      border: 1px dashed rgba(148,163,184,0.25);
+    }
+
+    .mc-knob {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 54px;
+      height: 54px;
+      transform: translate(-50%, -50%);
+      border-radius: 999px;
+      background: rgba(56,189,248,0.25);
+      border: 1px solid rgba(56,189,248,0.55);
+      box-shadow: 0 10px 18px rgba(0,0,0,0.5);
+    }
+
+    .mc-buttons {
+      position: absolute;
+      right: 12px;
+      bottom: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      pointer-events: none;
+    }
+
+    .mc-row { display: flex; gap: 10px; justify-content: flex-end; pointer-events: none; }
+
+    .mc-btn {
+      pointer-events: auto;
+      touch-action: none;
+      user-select: none;
+      -webkit-user-select: none;
+      width: 110px;
+      height: 52px;
+      border-radius: 14px;
+      border: 1px solid rgba(148,163,184,0.35);
+      background: rgba(2,6,23,0.65);
+      color: #e5e7eb;
+      font-weight: 800;
+      letter-spacing: 0.02em;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 12px 26px rgba(0,0,0,0.55);
+      opacity: 0.95;
+    }
+    .mc-btn:active { transform: translateY(1px); opacity: 1; }
+
+    .mc-btn.jump { border-color: rgba(56,189,248,0.65); }
+    .mc-btn.dash { border-color: rgba(129,140,248,0.65); }
+    .mc-btn.pause {
+      position: absolute;
+      right: 12px;
+      top: 10px;
+      width: 86px;
+      height: 44px;
+      border-radius: 999px;
+      border-color: rgba(34,197,94,0.55);
+      pointer-events: auto;
+    }
+
+    @media (max-width: 420px) {
+      .mc-joystick { width: 126px; height: 126px; }
+      .mc-btn { width: 100px; height: 50px; }
     }
   </style>
 </head>
+
 <body>
 <div class="layout">
   <!-- LEFT BANNER -->
   <aside class="ad-vertical">
-    <!-- LEFT SIDEBAR BANNER (160x600) -->
-    <!-- Google AdSense: paste your left sidebar ad code here
-    <ins class="adsbygoogle"
-         style="display:block"
-         data-ad-client="ca-pub-XXXX"
-         data-ad-slot="YYYY"
-         data-ad-format="vertical"></ins>
-    <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
-    -->
     <div>
       Left Banner Zone<br/>
       <strong>160×600</strong><br/>
@@ -116,40 +258,40 @@
   <main class="main-column">
     <!-- TOP LEADERBOARD -->
     <div class="top-banner">
-      <!-- TOP LEADERBOARD (728x90 recommended) -->
-      <!-- Google AdSense: paste your top leaderboard ad code here
-      <ins class="adsbygoogle"
-           style="display:block"
-           data-ad-client="ca-pub-XXXX"
-           data-ad-slot="ZZZZ"
-           data-ad-format="horizontal"></ins>
-      <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
-      -->
       Top Banner Zone – recommended 728×90 (auto also works).<br/>
       Paste your AdSense snippet here.
     </div>
-<!-- GAME HEADER -->
+
+    <!-- GAME HEADER -->
     <div class="game-header">
       <div class="title">Neo Runner – Campaign</div>
-      <div>
-        <a href="index.html">⬅ Back to Hub</a>
+      <div><a href="index.html">⬅ Back to Hub</a></div>
+    </div>
+
+    <!-- GAME CANVAS + MOBILE OVERLAY -->
+    <div class="game-wrap">
+      <canvas id="gameCanvas" width="960" height="540"></canvas>
+
+      <!-- ✅ Mobile controls overlay -->
+      <div class="mobile-controls" id="mobileControls" aria-hidden="true">
+        <div class="mc-joystick" id="joyBase"><div class="mc-knob" id="joyKnob"></div></div>
+
+        <button class="mc-btn pause" id="btnPause" type="button">⏸</button>
+
+        <div class="mc-buttons">
+          <div class="mc-row">
+            <button class="mc-btn dash" id="btnDash" type="button">DASH</button>
+          </div>
+          <div class="mc-row">
+            <button class="mc-btn jump" id="btnJump" type="button">JUMP</button>
+          </div>
+        </div>
       </div>
     </div>
-    <!-- GAME CANVAS -->
-    <canvas id="gameCanvas" width="960" height="540"></canvas>
   </main>
 
   <!-- RIGHT BANNER -->
   <aside class="ad-vertical">
-    <!-- RIGHT SIDEBAR BANNER -->
-    <!-- Google AdSense: paste your right sidebar ad code here
-    <ins class="adsbygoogle"
-         style="display:block"
-         data-ad-client="ca-pub-XXXX"
-         data-ad-slot="WWWW"
-         data-ad-format="vertical"></ins>
-    <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
-    -->
     <div>
       Right Banner Zone<br/>
       <strong>160×600</strong><br/>
@@ -729,9 +871,9 @@
   }
 ];
 
-// Make all levels longer without editing each one.
-// 1.0 = original, 1.5 = 50% longer, 2.0 = double, etc.
-const LEVEL_LENGTH_MULT = 5.0;
+  // Make all levels longer without editing each one.
+  // 1.0 = original, 1.5 = 50% longer, 2.0 = double, etc.
+  const LEVEL_LENGTH_MULT = 5.0;
 
   // ---------- Utils ----------
   function clamp(v, min, max) {
@@ -753,6 +895,88 @@ const LEVEL_LENGTH_MULT = 5.0;
   const keys = {};
   const mouse = { x: WIDTH / 2, y: HEIGHT / 2, down: false };
 
+  // ✅ Mobile detection + virtual controls
+  const IS_MOBILE = (('ontouchstart' in window) || (navigator.maxTouchPoints > 0)) &&
+                    window.matchMedia("(max-width: 900px)").matches;
+
+  const mobileControls = document.getElementById("mobileControls");
+  const joyBase = document.getElementById("joyBase");
+  const joyKnob = document.getElementById("joyKnob");
+  const btnJump = document.getElementById("btnJump");
+  const btnDash = document.getElementById("btnDash");
+  const btnPause = document.getElementById("btnPause");
+
+  if (mobileControls) mobileControls.style.display = IS_MOBILE ? "block" : "none";
+
+  const virtual = {
+    joyX: 0,
+    jumpQueued: false
+  };
+
+  // Joystick (horizontal only)
+  let joyActive = false;
+  let joyPointerId = null;
+  let joyCenter = { x: 0, y: 0 };
+  const joyMax = 44;
+
+  function setKnob(dx, dy) {
+    if (!joyKnob) return;
+    joyKnob.style.transform = `translate(${dx}px, ${dy}px) translate(-50%, -50%)`;
+  }
+  function resetJoystick() {
+    virtual.joyX = 0;
+    joyActive = false;
+    joyPointerId = null;
+    setKnob(0, 0);
+  }
+  function getJoyCenter() {
+    const r = joyBase.getBoundingClientRect();
+    joyCenter = { x: r.left + r.width / 2, y: r.top + r.height / 2 };
+  }
+  function onJoyMove(clientX) {
+    const dx = clientX - joyCenter.x;
+    const clampedDx = clamp(dx, -joyMax, joyMax);
+    virtual.joyX = clamp(clampedDx / joyMax, -1, 1);
+    setKnob(clampedDx, 0);
+  }
+
+  if (joyBase) {
+    joyBase.addEventListener("pointerdown", (e) => {
+      e.preventDefault();
+      joyBase.setPointerCapture(e.pointerId);
+      joyActive = true;
+      joyPointerId = e.pointerId;
+      getJoyCenter();
+      onJoyMove(e.clientX);
+    }, { passive: false });
+
+    joyBase.addEventListener("pointermove", (e) => {
+      if (!joyActive || e.pointerId !== joyPointerId) return;
+      e.preventDefault();
+      onJoyMove(e.clientX);
+    }, { passive: false });
+
+    joyBase.addEventListener("pointerup", (e) => {
+      if (e.pointerId !== joyPointerId) return;
+      e.preventDefault();
+      resetJoystick();
+    }, { passive: false });
+
+    joyBase.addEventListener("pointercancel", (e) => {
+      if (e.pointerId !== joyPointerId) return;
+      e.preventDefault();
+      resetJoystick();
+    }, { passive: false });
+  }
+
+  if (btnJump) {
+    btnJump.addEventListener("pointerdown", (e) => {
+      e.preventDefault();
+      virtual.jumpQueued = true; // tap/button => jump (double jump supported)
+      btnJump.setPointerCapture(e.pointerId);
+    }, { passive: false });
+  }
+
   window.addEventListener("keydown", e => {
     keys[e.key.toLowerCase()] = true;
     if (e.key === " " || e.key === "ArrowUp") e.preventDefault(); // avoid scroll
@@ -770,7 +994,6 @@ const LEVEL_LENGTH_MULT = 5.0;
         if (game.levelIndex < LEVELS.length - 1) {
           game.levelIndex++;
         } else {
-          // finished last sector – loop back to first
           game.levelIndex = 0;
         }
         startRun();
@@ -779,11 +1002,11 @@ const LEVEL_LENGTH_MULT = 5.0;
 
     if (e.key === "r" || e.key === "R") {
       if (game.state === "gameover") {
-        // restart same sector
         startRun();
       }
     }
   });
+
   window.addEventListener("keyup", e => {
     keys[e.key.toLowerCase()] = false;
   });
@@ -798,19 +1021,48 @@ const LEVEL_LENGTH_MULT = 5.0;
   canvas.addEventListener("mousedown", () => { mouse.down = true; });
   window.addEventListener("mouseup", () => { mouse.down = false; });
 
-  canvas.addEventListener("click", () => {
-    if (game.state === "menu" || game.state === "gameover") {
-      game.levelIndex = 0;
-      startRun();
-    } else if (game.state === "victory") {
-      if (game.levelIndex < LEVELS.length - 1) {
-        game.levelIndex++;
-      } else {
+  // ✅ Unified pointer tap handling (desktop + mobile)
+  // Tap while playing => jump, menu/victory => start/next
+  let pDown = false;
+  let pStartX = 0, pStartY = 0;
+  let pMoved = false;
+
+  canvas.addEventListener("pointerdown", (e) => {
+    pDown = true;
+    pMoved = false;
+    pStartX = e.clientX;
+    pStartY = e.clientY;
+
+    canvas.setPointerCapture(e.pointerId);
+    e.preventDefault();
+  }, { passive: false });
+
+  canvas.addEventListener("pointermove", (e) => {
+    if (!pDown) return;
+    if (Math.hypot(e.clientX - pStartX, e.clientY - pStartY) > 10) pMoved = true;
+    e.preventDefault();
+  }, { passive: false });
+
+  canvas.addEventListener("pointerup", (e) => {
+    if (!pDown) return;
+    pDown = false;
+
+    if (!pMoved) {
+      if (game.state === "playing") {
+        virtual.jumpQueued = true;
+      } else if (game.state === "menu" || game.state === "gameover") {
         game.levelIndex = 0;
+        startRun();
+      } else if (game.state === "victory") {
+        game.levelIndex = (game.levelIndex < LEVELS.length - 1) ? (game.levelIndex + 1) : 0;
+        startRun();
       }
-      startRun();
     }
-  });
+
+    e.preventDefault();
+  }, { passive: false });
+
+  canvas.addEventListener("pointercancel", () => { pDown = false; });
 
   // ---------- Game Data ----------
   const game = {
@@ -823,10 +1075,7 @@ const LEVEL_LENGTH_MULT = 5.0;
     levelIndex: 0
   };
 
-  const camera = {
-    x: 0,
-    y: 0
-  };
+  const camera = { x: 0, y: 0 };
 
   const player = {
     x: 80,
@@ -853,430 +1102,318 @@ const LEVEL_LENGTH_MULT = 5.0;
     invulnTimer: 0
   };
 
-	const platforms = [];
-	const hazards = [];
-	const orbs = [];
-	const drones = [];
-	const turrets = [];   // 👈 NEW
-	const particles = [];
-	let exitPortal = null;
-
+  const platforms = [];
+  const hazards = [];
+  const orbs = [];
+  const drones = [];
+  const turrets = [];
+  const particles = [];
+  let exitPortal = null;
 
   // ---------- Level Generation ----------
-function buildLevel() {
-  // 1) Level config
-  const cfg = LEVELS[game.levelIndex] || LEVELS[0];
+  function buildLevel() {
+    const cfg = LEVELS[game.levelIndex] || LEVELS[0];
 
-  // 2) Clear arrays
-  platforms.length = 0;
-  hazards.length   = 0;
-  orbs.length      = 0;
-  drones.length    = 0;
-  turrets.length   = 0;
-  particles.length = 0;
-  exitPortal       = null;
+    platforms.length = 0;
+    hazards.length   = 0;
+    orbs.length      = 0;
+    drones.length    = 0;
+    turrets.length   = 0;
+    particles.length = 0;
+    exitPortal       = null;
 
-  // 3) Safe values from config
-  const baseLength      = Number.isFinite(cfg.length)       ? cfg.length       : 3000;
-  const effectiveLength = baseLength * (typeof LEVEL_LENGTH_MULT === "number" ? LEVEL_LENGTH_MULT : 1);
+    const baseLength      = Number.isFinite(cfg.length)       ? cfg.length       : 3000;
+    const effectiveLength = baseLength * (typeof LEVEL_LENGTH_MULT === "number" ? LEVEL_LENGTH_MULT : 1);
 
-  const gravity         = Number.isFinite(cfg.gravity)      ? cfg.gravity      : 2100;
-  const jumpVel         = Number.isFinite(cfg.jumpVelocity) ? cfg.jumpVelocity : -750;
-  const heightScale     = Number.isFinite(cfg.heightScale)  ? cfg.heightScale  : 1;
-  const orbChance       = Number.isFinite(cfg.orbChance)    ? cfg.orbChance    : 0.22;
-  const pitGap          = Number.isFinite(cfg.pitGap)       ? cfg.pitGap       : 500;
-  const droneZones      = Number.isFinite(cfg.droneZones)
-                          ? cfg.droneZones
-                          : (3 + Math.floor(game.levelIndex / 3));
-  const droneSpeedFactor = Number.isFinite(cfg.droneSpeedFactor)
-                          ? cfg.droneSpeedFactor
-                          : 1;
+    const gravity         = Number.isFinite(cfg.gravity)      ? cfg.gravity      : 2100;
+    const jumpVel         = Number.isFinite(cfg.jumpVelocity) ? cfg.jumpVelocity : -750;
+    const heightScale     = Number.isFinite(cfg.heightScale)  ? cfg.heightScale  : 1;
+    const orbChance       = Number.isFinite(cfg.orbChance)    ? cfg.orbChance    : 0.22;
+    const pitGap          = Number.isFinite(cfg.pitGap)       ? cfg.pitGap       : 500;
+    const droneZones      = Number.isFinite(cfg.droneZones)
+                            ? cfg.droneZones
+                            : (3 + Math.floor(game.levelIndex / 3));
+    const droneSpeedFactor = Number.isFinite(cfg.droneSpeedFactor)
+                            ? cfg.droneSpeedFactor
+                            : 1;
 
-  game.levelLength  = effectiveLength;
-  const levelLength = game.levelLength || cfg.length || 4000;
+    game.levelLength  = effectiveLength;
+    const levelLength = game.levelLength || cfg.length || 4000;
 
-  // physics
-  player.gravity      = gravity;
-  player.jumpStrength = Math.abs(jumpVel);
+    // physics
+    player.gravity      = gravity;
+    player.jumpStrength = Math.abs(jumpVel);
 
-  const groundY = HEIGHT - 80;
+    const groundY = HEIGHT - 80;
 
-  // 4) Define zones where ground is REMOVED so you MUST use high platforms
-  const climbZones = [
-    {
-      start: effectiveLength * 0.55,
-      end:   effectiveLength * 0.62
-    },
-    {
-      start: effectiveLength * 0.78,
-      end:   effectiveLength * 0.86
+    const climbZones = [
+      { start: effectiveLength * 0.55, end: effectiveLength * 0.62 },
+      { start: effectiveLength * 0.78, end: effectiveLength * 0.86 }
+    ];
+
+    function addGroundSegmentClipped(segStart, segEnd) {
+      if (segEnd <= segStart) return;
+      let curStart = segStart;
+
+      for (const z of climbZones) {
+        const zStart = z.start;
+        const zEnd   = z.end;
+
+        if (zEnd <= curStart || zStart >= segEnd) continue;
+
+        if (zStart > curStart) {
+          const width = zStart - curStart;
+          if (width > 0) {
+            addPlatform({ x: curStart, y: groundY, w: width, h: 40, type: "ground" });
+          }
+        }
+
+        curStart = Math.max(curStart, zEnd);
+        if (curStart >= segEnd) break;
+      }
+
+      if (curStart < segEnd) {
+        addPlatform({ x: curStart, y: groundY, w: segEnd - curStart, h: 40, type: "ground" });
+      }
     }
-  ];
 
-  // helper: add a ground segment while cutting out climb zones
-  function addGroundSegmentClipped(segStart, segEnd) {
-    if (segEnd <= segStart) return;
+    const pitWidth  = 140;
+    const firstGapX = 400;
+    let lastGroundX = -200;
 
-    let curStart = segStart;
+    for (let x = firstGapX; x < effectiveLength - 400; x += pitGap) {
+      const pitCenter = x;
+      const leftEdge  = pitCenter - pitWidth / 2;
+      const rightEdge = pitCenter + pitWidth / 2;
 
-    for (const z of climbZones) {
-      const zStart = z.start;
-      const zEnd   = z.end;
+      addGroundSegmentClipped(lastGroundX, leftEdge);
 
-      // no overlap
-      if (zEnd <= curStart || zStart >= segEnd) continue;
+      hazards.push({
+        x: leftEdge,
+        y: groundY + 20,
+        w: pitWidth,
+        h: 40,
+        type: "pit"
+      });
 
-      // piece before the zone
-      if (zStart > curStart) {
-        const width = zStart - curStart;
-        if (width > 0) {
-          addPlatform({
-            x: curStart,
-            y: groundY,
-            w: width,
-            h: 40,
-            type: "ground"
-          });
+      lastGroundX = rightEdge;
+    }
+
+    addGroundSegmentClipped(lastGroundX, effectiveLength + 300);
+
+    const baseChunks = [
+      { startRel: 0.06, endRel: 0.24, heightOffset: 120 },
+      { startRel: 0.26, endRel: 0.42, heightOffset: 180 },
+      { startRel: 0.46, endRel: 0.62, heightOffset: 140 },
+      { startRel: 0.66, endRel: 0.82, heightOffset: 210 },
+      { startRel: 0.84, endRel: 0.96, heightOffset: 160 }
+    ];
+
+    baseChunks.forEach((c, idx) => {
+      const start      = effectiveLength * c.startRel;
+      const end        = effectiveLength * c.endRel;
+      const baseOffset = c.heightOffset * heightScale;
+
+      const segmentWidth = 150;
+      for (let x = start; x < end; x += segmentWidth + 60) {
+        const yOffset =
+          (idx % 2 === 0 ? 0 : (idx % 3 === 0 ? 40 : -20)) * heightScale;
+        const platY = groundY - baseOffset + yOffset;
+
+        addPlatform({ x, y: platY, w: segmentWidth, h: 20, type: "platform" });
+
+        if (Math.random() < orbChance) {
+          orbs.push({ x: x + segmentWidth / 2 - 8, y: platY - 28, r: 8, collected: false });
         }
       }
-
-      // skip [zStart, zEnd]
-      curStart = Math.max(curStart, zEnd);
-      if (curStart >= segEnd) break;
-    }
-
-    // tail piece after last skipped zone
-    if (curStart < segEnd) {
-      addPlatform({
-        x: curStart,
-        y: groundY,
-        w: segEnd - curStart,
-        h: 40,
-        type: "ground"
-      });
-    }
-  }
-
-  // 5) Ground with REAL gaps (aligned to pits), respecting climb zones
-  const pitWidth  = 140;
-  const firstGapX = 400;
-  let   lastGroundX = -200;
-
-  for (let x = firstGapX; x < effectiveLength - 400; x += pitGap) {
-    const pitCenter = x;
-    const leftEdge  = pitCenter - pitWidth / 2;
-    const rightEdge = pitCenter + pitWidth / 2;
-
-    // ground segment from lastGroundX -> leftEdge, with climb zones cut out
-    addGroundSegmentClipped(lastGroundX, leftEdge);
-
-    // the actual pit hazard
-    hazards.push({
-      x: leftEdge,
-      y: groundY + 20,
-      w: pitWidth,
-      h: 40,
-      type: "pit"
     });
 
-    lastGroundX = rightEdge;
-  }
+    for (const z of climbZones) {
+      const baseY  = groundY - 220 * heightScale;
+      const startX = z.start + 40;
+      const endX   = z.end - 40;
 
-  // final ground segment after last pit
-  addGroundSegmentClipped(lastGroundX, effectiveLength + 300);
+      let x = startX;
+      let idx = 0;
 
-  // 6) Base chunks for floating platforms
-  const baseChunks = [
-    { startRel: 0.06, endRel: 0.24, heightOffset: 120 },
-    { startRel: 0.26, endRel: 0.42, heightOffset: 180 },
-    { startRel: 0.46, endRel: 0.62, heightOffset: 140 },
-    { startRel: 0.66, endRel: 0.82, heightOffset: 210 },
-    { startRel: 0.84, endRel: 0.96, heightOffset: 160 }
-  ];
+      while (x < endX) {
+        const width   = 150 + Math.random() * 60;
+        const gapX    = 140 + Math.random() * 80;
 
-  baseChunks.forEach((c, idx) => {
-    const start      = effectiveLength * c.startRel;
-    const end        = effectiveLength * c.endRel;
-    const baseOffset = c.heightOffset * heightScale;
+        let stepOffset;
+        const pattern = idx % 4;
+        if (pattern === 0)      stepOffset = 0;
+        else if (pattern === 1) stepOffset = -50 * heightScale;
+        else if (pattern === 2) stepOffset = -90 * heightScale;
+        else                    stepOffset = -40 * heightScale;
 
-    const segmentWidth = 150;
-    for (let x = start; x < end; x += segmentWidth + 60) {
-      const yOffset =
-        (idx % 2 === 0 ? 0 : (idx % 3 === 0 ? 40 : -20)) * heightScale;
-      const platY = groundY - baseOffset + yOffset;
+        const jitterY = (Math.random() - 0.5) * 20 * heightScale;
+        const platY = baseY + stepOffset + jitterY;
 
-      addPlatform({
-        x,
-        y: platY,
-        w: segmentWidth,
-        h: 20,
-        type: "platform"
-      });
+        addPlatform({ x, y: platY, w: width, h: 20, type: "platform" });
 
-      if (Math.random() < orbChance) {
-        orbs.push({
-          x: x + segmentWidth / 2 - 8,
-          y: platY - 28,
-          r: 8,
-          collected: false
+        if (Math.random() < 0.30) {
+          orbs.push({ x: x + width / 2 - 8, y: platY - 26, r: 8, collected: false });
+        }
+
+        x += width + gapX;
+        idx++;
+      }
+    }
+
+    const spikeChance = clamp(0.25 + 0.05 * game.levelIndex, 0.25, 0.4);
+    for (const p of platforms) {
+      if (p.type === "platform" && Math.random() < spikeChance) {
+        hazards.push({ x: p.x + p.w / 3, y: p.y - 18, w: 24, h: 18, type: "spikes" });
+      }
+    }
+
+    const zoneCount = droneZones;
+    const patrolHalfWidth = 130;
+    const rightDronesLimit = effectiveLength - 900;
+
+    for (let i = 1; i <= zoneCount; i++) {
+      let baseZoneX = (effectiveLength / (zoneCount + 1)) * i;
+      let zoneX = baseZoneX + (Math.random() - 0.5) * 80;
+
+      zoneX = clamp(zoneX, 400 + patrolHalfWidth, rightDronesLimit - patrolHalfWidth);
+      if (zoneX >= rightDronesLimit) continue;
+
+      let band;
+      if (i % 3 === 0) band = "low";
+      else if (i % 3 === 1) band = "mid";
+      else band = "high";
+
+      const baseOffsetLow  = 80;
+      const baseOffsetMid  = 180;
+      const baseOffsetHigh = 280;
+
+      let zoneY;
+      if (band === "low") zoneY = groundY - baseOffsetLow;
+      else if (band === "mid") zoneY = groundY - baseOffsetMid;
+      else zoneY = groundY - baseOffsetHigh;
+
+      const baseSpeed = 70 * droneSpeedFactor;
+
+      let dronesPerZone =
+        game.levelIndex < 8  ? 2 :
+        game.levelIndex < 18 ? 3 : 4;
+
+      if (i === zoneCount) dronesPerZone = Math.max(1, dronesPerZone - 1);
+
+      let minX = zoneX - patrolHalfWidth;
+      let maxX = zoneX + patrolHalfWidth;
+
+      minX = Math.max(260, minX);
+      maxX = Math.min(effectiveLength - 260, maxX);
+
+      if (maxX - minX < 60) continue;
+
+      for (let j = 0; j < dronesPerZone; j++) {
+        const t = (j + 0.5) / dronesPerZone;
+        const baseX = minX + t * (maxX - minX);
+
+        const jitterX = (Math.random() - 0.5) * 20;
+        const jitterY = (Math.random() - 0.5) * 14;
+
+        drones.push({
+          x: baseX + jitterX,
+          y: zoneY + (j % 2 === 0 ? 0 : 24) + jitterY,
+          w: 30,
+          h: 24,
+          vx: baseSpeed * (Math.random() < 0.5 ? 1 : -1),
+          minX,
+          maxX,
+          alive: true
         });
       }
     }
-  });
 
-  // 7) FORCED CLIMB HIGH PLATFORMS (no ground underneath due to climb zones)
-  for (const z of climbZones) {
-    const baseY  = groundY - 220 * heightScale;
-    const startX = z.start + 40;
-    const endX   = z.end - 40;
+    drones.push({
+      x: 450,
+      y: groundY - 40,
+      w: 30,
+      h: 24,
+      vx: 60 * droneSpeedFactor,
+      minX: 360,
+      maxX: 540,
+      alive: true
+    });
 
-    let x = startX;
-    let idx = 0;
+    const turretCount = Math.max(3, Math.floor(levelLength / 1800));
+    for (let i = 0; i < turretCount; i++) {
+      const baseX = levelLength * (0.18 + 0.42 * Math.random());
+      const maxHeightOffset = 260 + 30 * (i % 3);
 
-    while (x < endX) {
-      // variable width & spacing
-      const width   = 150 + Math.random() * 60;        // 150–210
-      const gapX    = 140 + Math.random() * 80;        // 140–220 between platforms
+      const minY   = groundY - maxHeightOffset;
+      const maxY   = groundY - 120;
+      const startY = (minY + maxY) / 2;
 
-      // stair-like vertical pattern: up, up, small down, repeat
-      let stepOffset;
-      const pattern = idx % 4;
-      if (pattern === 0)      stepOffset = 0;
-      else if (pattern === 1) stepOffset = -50 * heightScale;
-      else if (pattern === 2) stepOffset = -90 * heightScale;
-      else                    stepOffset = -40 * heightScale;
-
-      // small random variation so it's not perfectly regular
-      const jitterY = (Math.random() - 0.5) * 20 * heightScale;
-
-      const platY = baseY + stepOffset + jitterY;
-
-      addPlatform({
-        x,
-        y: platY,
-        w: width,
-        h: 20,
-        type: "platform"
-      });
-
-      // a few orbs, but not on every single step
-      if (Math.random() < 0.30) {
-        orbs.push({
-          x: x + width / 2 - 8,
-          y: platY - 26,
-          r: 8,
-          collected: false
-        });
-      }
-
-      x += width + gapX;
-      idx++;
-    }
-  }
-
-
-  // 8) Spikes on some platforms
-  const spikeChance = clamp(0.25 + 0.05 * game.levelIndex, 0.25, 0.4);
-  for (const p of platforms) {
-    if (p.type === "platform" && Math.random() < spikeChance) {
-      hazards.push({
-        x: p.x + p.w / 3,
-        y: p.y - 18,
-        w: 24,
-        h: 18,
-        type: "spikes"
-      });
-    }
-  }
-
-        // 9) Drones – roaming enemies (more on later levels, spread vertically)
-  const zoneCount = droneZones;
-  const patrolHalfWidth = 130;
-
-  // we don't want drones too close to the portal area – leave that to turrets
-  const rightDronesLimit = effectiveLength - 900; // no new zones after this x
-
-  for (let i = 1; i <= zoneCount; i++) {
-    let baseZoneX = (effectiveLength / (zoneCount + 1)) * i;
-    let zoneX = baseZoneX + (Math.random() - 0.5) * 80; // ±40 jitter
-
-    // clamp zone center so it's not too close to edges or portal
-    zoneX = clamp(
-      zoneX,
-      400 + patrolHalfWidth,
-      rightDronesLimit - patrolHalfWidth
-    );
-
-    // if this zone would end up beyond our safe limit, skip it
-    if (zoneX >= rightDronesLimit) continue;
-
-    // choose a vertical band for this zone
-    let band;
-    if (i % 3 === 0) band = "low";
-    else if (i % 3 === 1) band = "mid";
-    else band = "high";
-
-    const baseOffsetLow  = 80;
-    const baseOffsetMid  = 180;
-    const baseOffsetHigh = 280;
-
-    let zoneY;
-    if (band === "low") {
-      zoneY = groundY - baseOffsetLow;
-    } else if (band === "mid") {
-      zoneY = groundY - baseOffsetMid;
-    } else {
-      zoneY = groundY - baseOffsetHigh;
-    }
-
-    const baseSpeed = 70 * droneSpeedFactor;
-
-    let dronesPerZone =
-      game.levelIndex < 8  ? 2 :
-      game.levelIndex < 18 ? 3 : 4;
-
-    // make the last zone a bit lighter so we avoid "pairs" bunching up
-    if (i === zoneCount) {
-      dronesPerZone = Math.max(1, dronesPerZone - 1);
-    }
-
-    // compute an actual patrol region that stays inside the level
-    let minX = zoneX - patrolHalfWidth;
-    let maxX = zoneX + patrolHalfWidth;
-
-    minX = Math.max(260, minX);
-    maxX = Math.min(effectiveLength - 260, maxX);
-
-    // if the patrol region is too tiny, just skip this zone
-    if (maxX - minX < 60) continue;
-
-    // place drones spaced across the patrol region instead of stacked
-    for (let j = 0; j < dronesPerZone; j++) {
-      const t = (j + 0.5) / dronesPerZone; // 0..1 within the band
-      const baseX = minX + t * (maxX - minX);
-
-      const jitterX = (Math.random() - 0.5) * 20;
-      const jitterY = (Math.random() - 0.5) * 14;
-
-      drones.push({
-        x: baseX + jitterX,
-        y: zoneY + (j % 2 === 0 ? 0 : 24) + jitterY,
-        w: 30,
-        h: 24,
-        vx: baseSpeed * (Math.random() < 0.5 ? 1 : -1),
-        minX,
-        maxX,
+      turrets.push({
+        x: baseX,
+        y: startY,
+        w: 26,
+        h: 34,
+        vy: 80 + 20 * (i % 3),
+        minY,
+        maxY,
         alive: true
       });
     }
+
+    const clusterCount   = 3;
+    const clusterStartX  = effectiveLength - 650;
+    const clusterSpacing = 170;
+
+    for (let i = 0; i < clusterCount; i++) {
+      const tx = clusterStartX + i * clusterSpacing;
+
+      const bottomMinY = groundY - 72;
+      const bottomMaxY = groundY - 38;
+
+      turrets.push({
+        x: tx,
+        y: bottomMaxY,
+        w: 26,
+        h: 34,
+        vy: -60 - i * 6,
+        minY: bottomMinY,
+        maxY: bottomMaxY,
+        alive: true
+      });
+
+      const airMinY = groundY - 220;
+      const airMaxY = groundY - 150;
+
+      turrets.push({
+        x: tx,
+        y: airMaxY,
+        w: 26,
+        h: 34,
+        vy: -80 - i * 8,
+        minY: airMinY,
+        maxY: airMaxY,
+        alive: true
+      });
+    }
+
+    exitPortal = {
+      x: effectiveLength - 120,
+      y: groundY - 120,
+      w: 60,
+      h: 100,
+      active: true
+    };
+
+    player.x = 60;
+    player.y = groundY - player.h;
+    player.vx = 0;
+    player.vy = 0;
+    player.onGround = true;
+    player.jumpsUsed = 0;
+
+    game.distance = 0;
   }
-
-  // Guaranteed early low drone so the start isn't free
-  drones.push({
-    x: 450,
-    y: groundY - 40,
-    w: 30,
-    h: 24,
-    vx: 60 * droneSpeedFactor,
-    minX: 360,
-    maxX: 540,
-    alive: true
-  });
-
-
-
-
-  // 10) Turrets – vertical patrol enemies (mid-section only)
-  const turretCount = Math.max(3, Math.floor(levelLength / 1800));
-  for (let i = 0; i < turretCount; i++) {
-    // only between ~18% and ~60% of the level
-    const baseX = levelLength * (0.18 + 0.42 * Math.random());
-    const maxHeightOffset = 260 + 30 * (i % 3);
-
-    const minY   = groundY - maxHeightOffset; // highest position
-    const maxY   = groundY - 120;             // lowest position (still above pits)
-    const startY = (minY + maxY) / 2;
-
-    turrets.push({
-      x: baseX,
-      y: startY,
-      w: 26,
-      h: 34,
-      vy: 80 + 20 * (i % 3),
-      minY,
-      maxY,
-      alive: true
-    });
-  }
-
-
-
-      // 11) END-SECTION TURRET GAUNTLET – 3 ground + 3 air (all bobbing)
-  const clusterCount   = 3;
-  const clusterStartX  = effectiveLength - 650;
-  const clusterSpacing = 170;
-
-  for (let i = 0; i < clusterCount; i++) {
-    const tx = clusterStartX + i * clusterSpacing;
-
-    // --- bottom row: bob just above the ground ---
-    const bottomMinY = groundY - 72; // highest
-    const bottomMaxY = groundY - 38; // lowest (almost touching ground)
-
-    turrets.push({
-      x: tx,
-      y: bottomMaxY,                  // start near ground
-      w: 26,
-      h: 34,
-      vy: -60 - i * 6,                // slightly varied
-      minY: bottomMinY,
-      maxY: bottomMaxY,
-      alive: true
-    });
-
-    // --- top row: bob higher above them ---
-    const airMinY = groundY - 220;    // highest
-    const airMaxY = groundY - 150;    // lowest
-
-    turrets.push({
-      x: tx,
-      y: airMaxY,                     // start lower
-      w: 26,
-      h: 34,
-      vy: -80 - i * 8,
-      minY: airMinY,
-      maxY: airMaxY,
-      alive: true
-    });
-  }
-
-
-
-
-  // 12) Exit portal
-  exitPortal = {
-    x: effectiveLength - 120,
-    y: groundY - 120,
-    w: 60,
-    h: 100,
-    active: true
-  };
-
-  // 13) Player start
-  player.x = 60;
-  player.y = groundY - player.h;
-  player.vx = 0;
-  player.vy = 0;
-  player.onGround = true;
-  player.jumpsUsed = 0;
-
-  // 14) Reset distance
-  game.distance = 0;
-}
-
-
-
-
 
   // ---------- Particles ----------
   function spawnParticles(x, y, color, count = 12) {
@@ -1284,8 +1421,7 @@ function buildLevel() {
       const ang = Math.random() * TAU;
       const spd = 60 + Math.random() * 200;
       particles.push({
-        x,
-        y,
+        x, y,
         vx: Math.cos(ang) * spd,
         vy: Math.sin(ang) * spd,
         life: 0.4 + Math.random() * 0.6,
@@ -1294,21 +1430,21 @@ function buildLevel() {
       });
     }
   }
-function spawnPitSparks(x, y, color = "rgba(94,234,212,1)", count = 6) {
-  for (let i = 0; i < count; i++) {
-    const vx = (Math.random() - 0.5) * 60;          // small horizontal drift
-    const vy = 40 + Math.random() * 120;            // always falling down
-    particles.push({
-      x,
-      y,
-      vx,
-      vy,
-      life: 0.5 + Math.random() * 0.4,
-      radius: 1 + Math.random() * 2,
-      color
-    });
+
+  function spawnPitSparks(x, y, color = "rgba(94,234,212,1)", count = 6) {
+    for (let i = 0; i < count; i++) {
+      const vx = (Math.random() - 0.5) * 60;
+      const vy = 40 + Math.random() * 120;
+      particles.push({
+        x, y,
+        vx, vy,
+        life: 0.5 + Math.random() * 0.4,
+        radius: 1 + Math.random() * 2,
+        color
+      });
+    }
   }
-}
+
   function updateParticles(dt) {
     for (let i = particles.length - 1; i >= 0; i--) {
       const p = particles[i];
@@ -1354,6 +1490,13 @@ function spawnPitSparks(x, y, color = "rgba(94,234,212,1)", count = 6) {
     spawnParticles(player.x, player.y + player.h / 2, "rgba(129,140,248,1)", 20);
   }
 
+  if (btnDash) btnDash.addEventListener("click", (e) => { e.preventDefault(); handleDash(); });
+  if (btnPause) btnPause.addEventListener("click", (e) => {
+    e.preventDefault();
+    if (game.state === "playing") game.state = "paused";
+    else if (game.state === "paused") game.state = "playing";
+  });
+
   let jumpPressed = false;
   let dashPressed = false;
 
@@ -1361,6 +1504,10 @@ function spawnPitSparks(x, y, color = "rgba(94,234,212,1)", count = 6) {
     let move = 0;
     if (keys["arrowleft"] || keys["a"]) move -= 1;
     if (keys["arrowright"] || keys["d"]) move += 1;
+
+    // ✅ mobile joystick adds movement
+    move += virtual.joyX;
+    move = clamp(move, -1, 1);
 
     const targetSpeed = move * player.speed;
     player.vx = lerp(player.vx, targetSpeed, 0.12);
@@ -1374,6 +1521,12 @@ function spawnPitSparks(x, y, color = "rgba(94,234,212,1)", count = 6) {
     }
     if (!wantJump) jumpPressed = false;
 
+    // ✅ mobile jump tap/button
+    if (virtual.jumpQueued) {
+      handleJump();
+      virtual.jumpQueued = false;
+    }
+
     const wantDash = keys["shift"];
     if (wantDash && !dashPressed) {
       handleDash();
@@ -1383,9 +1536,7 @@ function spawnPitSparks(x, y, color = "rgba(94,234,212,1)", count = 6) {
 
     if (player.dashTimer > 0) {
       player.dashTimer -= dt;
-      if (player.dashTimer <= 0) {
-        player.dashTimer = 0;
-      }
+      if (player.dashTimer <= 0) player.dashTimer = 0;
     }
 
     if (player.invulnTimer > 0) {
@@ -1482,25 +1633,25 @@ function spawnPitSparks(x, y, color = "rgba(94,234,212,1)", count = 6) {
         }
       }
     }
-	// extra: pit proximity FX (falling sparks)
-  const groundY = HEIGHT - 80;
-  for (const h of hazards) {
-    if (h.type !== "pit") continue;
 
-    const pitCenterX = h.x + h.w / 2;
-    const playerCenterX = player.x + player.w / 2;
-    const dx = Math.abs(playerCenterX - pitCenterX);
+    // pit proximity FX (falling sparks)
+    const groundY = HEIGHT - 80;
+    for (const h of hazards) {
+      if (h.type !== "pit") continue;
 
-    // only when somewhat close horizontally & above ground
-    if (dx < 220 && player.y < groundY + 40) {
-      // dt-scaled chance so it's framerate-independent
-      if (Math.random() < 2.0 * dt) {
-        const sparkX = pitCenterX + (Math.random() - 0.5) * h.w * 0.6;
-        const pitTopWorldY = groundY; // top edge in world space
-        spawnPitSparks(sparkX, pitTopWorldY - 4, "rgba(94,234,212,1)", 4);
+      const pitCenterX = h.x + h.w / 2;
+      const playerCenterX = player.x + player.w / 2;
+      const dx = Math.abs(playerCenterX - pitCenterX);
+
+      if (dx < 220 && player.y < groundY + 40) {
+        if (Math.random() < 2.0 * dt) {
+          const sparkX = pitCenterX + (Math.random() - 0.5) * h.w * 0.6;
+          const pitTopWorldY = groundY;
+          spawnPitSparks(sparkX, pitTopWorldY - 4, "rgba(94,234,212,1)", 4);
+        }
       }
     }
-  }
+
     // drones
     for (const d of drones) {
       if (!d.alive) continue;
@@ -1531,42 +1682,40 @@ function spawnPitSparks(x, y, color = "rgba(94,234,212,1)", count = 6) {
         }
       }
     }
-	    // turrets – vertical patrols
-  for (const t of turrets) {
-    if (!t.alive) continue;
 
-    // simple top/bottom bounds on *top* of turret
-    t.y += t.vy * dt;
+    // turrets – vertical patrols
+    for (const t of turrets) {
+      if (!t.alive) continue;
 
-    if (t.y < t.minY) {
-      t.y = t.minY;
-      t.vy *= -1;
-    } else if (t.y > t.maxY) {
-      t.y = t.maxY;
-      t.vy *= -1;
-    }
+      t.y += t.vy * dt;
 
-    const tr = { x: t.x, y: t.y, w: t.w, h: t.h };
-    const pr = { x: player.x, y: player.y, w: player.w, h: player.h };
+      if (t.y < t.minY) {
+        t.y = t.minY;
+        t.vy *= -1;
+      } else if (t.y > t.maxY) {
+        t.y = t.maxY;
+        t.vy *= -1;
+      }
 
-    if (rectsOverlap(pr, tr)) {
-      const playerBottom = player.y + player.h;
-      const turretTop = t.y;
+      const tr = { x: t.x, y: t.y, w: t.w, h: t.h };
+      const pr = { x: player.x, y: player.y, w: player.w, h: player.h };
 
-      // stomp logic
-      if (player.vy > 120 && playerBottom - turretTop < 15) {
-        t.alive = false;
-        player.vy = -player.jumpStrength * 0.7;
-        player.jumpsUsed = Math.min(player.jumpsUsed, 1);
-        spawnParticles(t.x + t.w / 2, t.y + t.h / 2, "rgba(251,191,36,1)", 20);
-        game.score += 120;
-      } else {
-        damagePlayer(30);
+      if (rectsOverlap(pr, tr)) {
+        const playerBottom = player.y + player.h;
+        const turretTop = t.y;
+
+        if (player.vy > 120 && playerBottom - turretTop < 15) {
+          t.alive = false;
+          player.vy = -player.jumpStrength * 0.7;
+          player.jumpsUsed = Math.min(player.jumpsUsed, 1);
+          spawnParticles(t.x + t.w / 2, t.y + t.h / 2, "rgba(251,191,36,1)", 20);
+          game.score += 120;
+        } else {
+          damagePlayer(30);
+        }
       }
     }
   }
-}
-
 
   function updateOrbs(dt) {
     for (let i = orbs.length - 1; i >= 0; i--) {
@@ -1592,33 +1741,27 @@ function spawnPitSparks(x, y, color = "rgba(94,234,212,1)", count = 6) {
     const pr = { x: player.x, y: player.y, w: player.w, h: player.h };
     const er = { x: exitPortal.x, y: exitPortal.y, w: exitPortal.w, h: exitPortal.h };
     if (rectsOverlap(pr, er)) {
-      // level clear
       game.state = "victory";
-      game.score += 200 * (game.levelIndex + 1); // small sector bonus
+      game.score += 200 * (game.levelIndex + 1);
       game.bestScore = Math.max(game.bestScore, game.score);
     }
   }
 
   // ---------- Game Flow ----------
   function startRun() {
-  const cfg = LEVELS[game.levelIndex] || LEVELS[0];
+    game.state = "playing";
+    game.time = 0;
+    game.score = game.levelIndex === 0 ? 0 : game.score;
+    game.distance = 0;
 
-  game.state = "playing";
-  game.time = 0;
-  game.score = game.levelIndex === 0 ? 0 : game.score;
-  game.distance = 0;
-  // remove / comment this:
-  // game.levelLength = cfg.length;
+    player.hp = player.maxHp;
+    player.shield = 20;
+    player.invulnTimer = 0;
+    player.dashTimer = 0;
+    player.jumpsUsed = 0;
 
-  player.hp = player.maxHp;
-  player.shield = 20;
-  player.invulnTimer = 0;
-  player.dashTimer = 0;
-  player.jumpsUsed = 0;
-
-  buildLevel();
-}
-
+    buildLevel();
+  }
 
   // ---------- Update ----------
   function update(dt) {
@@ -1628,9 +1771,7 @@ function spawnPitSparks(x, y, color = "rgba(94,234,212,1)", count = 6) {
       return;
     }
 
-    if (game.state === "paused") {
-      return;
-    }
+    if (game.state === "paused") return;
 
     game.time += dt;
 
@@ -1694,170 +1835,136 @@ function spawnPitSparks(x, y, color = "rgba(94,234,212,1)", count = 6) {
     ctx.globalAlpha = 1;
     ctx.restore();
   }
-// put this near where you define `platforms`
-//const platforms = []; // (you already have this)
 
-// SAFE helper
-function addPlatform(p) {
-  if (
-    !Number.isFinite(p.x) ||
-    !Number.isFinite(p.y) ||
-    !Number.isFinite(p.w) ||
-    !Number.isFinite(p.h)
-  ) {
-    console.warn("Bad platform on creation", p);
-    return; // don't add invalid stuff
+  // SAFE helper
+  function addPlatform(p) {
+    if (!Number.isFinite(p.x) || !Number.isFinite(p.y) || !Number.isFinite(p.w) || !Number.isFinite(p.h)) {
+      console.warn("Bad platform on creation", p);
+      return;
+    }
+    platforms.push(p);
   }
 
-  // IMPORTANT: push into the array, do NOT call addPlatform again
-  platforms.push(p);
-}
+  function drawPlatforms() {
+    ctx.save();
+    for (const p of platforms) {
+      const sx = p.x - camera.x;
+      const sy = p.y - camera.y;
 
+      if (!Number.isFinite(sx) || !Number.isFinite(sy) || !Number.isFinite(p.w) || !Number.isFinite(p.h)) {
+        console.warn("Bad platform data at draw", { p, sx, sy, pY: p.y, camY: camera.y });
+        continue;
+      }
 
-function drawPlatforms() {
-  ctx.save();
-  for (const p of platforms) {
-    const sx = p.x - camera.x;
-    const sy = p.y - camera.y;
+      if (sx + p.w < -40 || sx > WIDTH + 40) continue;
 
-    if (
-      !Number.isFinite(sx) ||
-      !Number.isFinite(sy) ||
-      !Number.isFinite(p.w) ||
-      !Number.isFinite(p.h)
-    ) {
-      console.warn("Bad platform data at draw", { p, sx, sy, pY: p.y, camY: camera.y });
-      continue;
+      const isGround = p.type === "ground";
+
+      ctx.fillStyle = isGround ? "rgba(72, 44, 28, 0.98)" : "rgba(15, 23, 42, 0.9)";
+      ctx.fillRect(sx, sy, p.w, p.h);
+
+      const grad = ctx.createLinearGradient(sx, sy, sx, sy + p.h);
+      if (isGround) {
+        grad.addColorStop(0, "#7c4a27");
+        grad.addColorStop(1, "#4b2a16");
+      } else {
+        grad.addColorStop(0, "#38bdf8");
+        grad.addColorStop(1, "#6366f1");
+      }
+
+      ctx.strokeStyle = grad;
+      ctx.lineWidth = isGround ? 2 : 3;
+      ctx.strokeRect(sx, sy, p.w, p.h);
+
+      if (!isGround) {
+        ctx.globalAlpha = 0.14;
+        ctx.fillStyle = "#22d3ee";
+        ctx.fillRect(sx, sy + p.h, p.w, 4);
+        ctx.globalAlpha = 1;
+      }
     }
-
-    if (sx + p.w < -40 || sx > WIDTH + 40) continue;
-
-    const isGround = p.type === "ground";
-
-    // --- FILL ---
-    // ground = brown, platforms = dark bluish
-    ctx.fillStyle = isGround
-      ? "rgba(72, 44, 28, 0.98)"   // rich brown
-      : "rgba(15, 23, 42, 0.9)";   // original for platforms
-    ctx.fillRect(sx, sy, p.w, p.h);
-
-    // --- OUTLINE / GRADIENT ---
-    const grad = ctx.createLinearGradient(sx, sy, sx, sy + p.h);
-    if (isGround) {
-      grad.addColorStop(0, "#7c4a27"); // lighter brown top
-      grad.addColorStop(1, "#4b2a16"); // darker brown bottom
-    } else {
-      grad.addColorStop(0, "#38bdf8"); // neon platforms
-      grad.addColorStop(1, "#6366f1");
-    }
-
-    ctx.strokeStyle = grad;
-    ctx.lineWidth = isGround ? 2 : 3;
-    ctx.strokeRect(sx, sy, p.w, p.h);
-
-    // glow strip for *non-ground* platforms only
-    if (!isGround) {
-      ctx.globalAlpha = 0.14;
-      ctx.fillStyle = "#22d3ee";
-      ctx.fillRect(sx, sy + p.h, p.w, 4);
-      ctx.globalAlpha = 1;
-    }
+    ctx.restore();
   }
-  ctx.restore();
-}
-
-
-
 
   function drawHazards() {
-  ctx.save();
-  const groundY = HEIGHT - 80;
+    ctx.save();
+    const groundY = HEIGHT - 80;
 
-  for (const h of hazards) {
-    const sx = h.x - camera.x;
-    const sy = h.y - camera.y;
-    if (sx + h.w < -40 || sx > WIDTH + 40) continue;
+    for (const h of hazards) {
+      const sx = h.x - camera.x;
+      const sy = h.y - camera.y;
+      if (sx + h.w < -40 || sx > WIDTH + 40) continue;
 
-    if (h.type === "pit") {
-      const pitTop   = groundY - camera.y;
-      const pitDepth = 100;
+      if (h.type === "pit") {
+        const pitTop   = groundY - camera.y;
+        const pitDepth = 100;
 
-      // --- BLACK VOID ---
-      ctx.fillStyle = "rgb(2,2,12)";
-      ctx.fillRect(sx, pitTop, h.w, pitDepth);
+        ctx.fillStyle = "rgb(2,2,12)";
+        ctx.fillRect(sx, pitTop, h.w, pitDepth);
 
-      // --- DEEP DARK FADE ---
-      const fade = ctx.createLinearGradient(sx, pitTop, sx, pitTop + pitDepth);
-      fade.addColorStop(0, "rgba(0,0,0,0.9)");
-      fade.addColorStop(1, "rgba(0,0,0,1)");
-      ctx.fillStyle = fade;
-      ctx.fillRect(sx, pitTop, h.w, pitDepth);
+        const fade = ctx.createLinearGradient(sx, pitTop, sx, pitTop + pitDepth);
+        fade.addColorStop(0, "rgba(0,0,0,0.9)");
+        fade.addColorStop(1, "rgba(0,0,0,1)");
+        ctx.fillStyle = fade;
+        ctx.fillRect(sx, pitTop, h.w, pitDepth);
 
-      // --- NEON EDGE (top rim) ---
-      const rim = ctx.createLinearGradient(sx, pitTop - 4, sx, pitTop + 4);
-      rim.addColorStop(0, "#7dd3fc");
-      rim.addColorStop(1, "#0ea5e9");
-      ctx.fillStyle = rim;
-      ctx.fillRect(sx, pitTop - 3, h.w, 3);
+        const rim = ctx.createLinearGradient(sx, pitTop - 4, sx, pitTop + 4);
+        rim.addColorStop(0, "#7dd3fc");
+        rim.addColorStop(1, "#0ea5e9");
+        ctx.fillStyle = rim;
+        ctx.fillRect(sx, pitTop - 3, h.w, 3);
 
-      // --- SIDE WARNING STRIPES ---
-      ctx.fillStyle = "#facc15";
-      const stripeH = 14;
+        ctx.fillStyle = "#facc15";
+        const stripeH = 14;
 
-      function drawStripe(x, flip) {
-        ctx.save();
-        ctx.translate(x, pitTop - stripeH);
-        if (flip) ctx.scale(-1, 1);
-        ctx.beginPath();
-        ctx.moveTo(0, 0);
-        ctx.lineTo(6, stripeH);
-        ctx.lineTo(0, stripeH);
-        ctx.closePath();
-        ctx.fill();
-        ctx.restore();
-      }
+        function drawStripe(x, flip) {
+          ctx.save();
+          ctx.translate(x, pitTop - stripeH);
+          if (flip) ctx.scale(-1, 1);
+          ctx.beginPath();
+          ctx.moveTo(0, 0);
+          ctx.lineTo(6, stripeH);
+          ctx.lineTo(0, stripeH);
+          ctx.closePath();
+          ctx.fill();
+          ctx.restore();
+        }
 
-      drawStripe(sx - 4, false);
-      drawStripe(sx + h.w + 4, true);
+        drawStripe(sx - 4, false);
+        drawStripe(sx + h.w + 4, true);
 
-      // --- SUBTLE MIST HOVERING ABOVE PIT ---
-      const mistLayers = 2;
-      for (let i = 0; i < mistLayers; i++) {
-        const t = game.time * 0.7 + i * 1.3 + h.x * 0.001;
-        const mistHeight = 10 + i * 6;
-        const mistY =
-          pitTop - 8 - i * 8 + Math.sin(t) * 2; // slight wobble
+        const mistLayers = 2;
+        for (let i = 0; i < mistLayers; i++) {
+          const t = game.time * 0.7 + i * 1.3 + h.x * 0.001;
+          const mistHeight = 10 + i * 6;
+          const mistY = pitTop - 8 - i * 8 + Math.sin(t) * 2;
 
-        ctx.globalAlpha = 0.20 - i * 0.06;
-        const mg = ctx.createLinearGradient(sx, mistY, sx, mistY + mistHeight);
-        mg.addColorStop(0, "rgba(148,163,184,0.3)");
-        mg.addColorStop(1, "rgba(15,23,42,0)");
-        ctx.fillStyle = mg;
-        ctx.fillRect(sx, mistY, h.w, mistHeight);
-      }
-      ctx.globalAlpha = 1;
-    }
-
-    else if (h.type === "spikes") {
-      ctx.fillStyle = "#f97316";
-      const spikes = Math.max(3, Math.floor(h.w / 6));
-      const step = h.w / spikes;
-      for (let i = 0; i < spikes; i++) {
-        const x0 = sx + i * step;
-        ctx.beginPath();
-        ctx.moveTo(x0, sy + h.h);
-        ctx.lineTo(x0 + step / 2, sy);
-        ctx.lineTo(x0 + step, sy + h.h);
-        ctx.closePath();
-        ctx.fill();
+          ctx.globalAlpha = 0.20 - i * 0.06;
+          const mg = ctx.createLinearGradient(sx, mistY, sx, mistY + mistHeight);
+          mg.addColorStop(0, "rgba(148,163,184,0.3)");
+          mg.addColorStop(1, "rgba(15,23,42,0)");
+          ctx.fillStyle = mg;
+          ctx.fillRect(sx, mistY, h.w, mistHeight);
+        }
+        ctx.globalAlpha = 1;
+      } else if (h.type === "spikes") {
+        ctx.fillStyle = "#f97316";
+        const spikes = Math.max(3, Math.floor(h.w / 6));
+        const step = h.w / spikes;
+        for (let i = 0; i < spikes; i++) {
+          const x0 = sx + i * step;
+          ctx.beginPath();
+          ctx.moveTo(x0, sy + h.h);
+          ctx.lineTo(x0 + step / 2, sy);
+          ctx.lineTo(x0 + step, sy + h.h);
+          ctx.closePath();
+          ctx.fill();
+        }
       }
     }
+
+    ctx.restore();
   }
-
-  ctx.restore();
-}
-
-
 
   function drawOrbs() {
     ctx.save();
@@ -1925,52 +2032,49 @@ function drawPlatforms() {
     }
     ctx.restore();
   }
-function drawTurrets() {
-  ctx.save();
-  for (const t of turrets) {
-    if (!t.alive) continue;
 
-    const sx = t.x - camera.x;
-    const sy = t.y - camera.y;
-    if (sx + t.w < -40 || sx > WIDTH + 40) continue;
+  function drawTurrets() {
+    ctx.save();
+    for (const t of turrets) {
+      if (!t.alive) continue;
 
-    const cx = sx + t.w / 2;
-    const cy = sy + t.h / 2;
+      const sx = t.x - camera.x;
+      const sy = t.y - camera.y;
+      if (sx + t.w < -40 || sx > WIDTH + 40) continue;
 
-    // glow
-    const glow = ctx.createRadialGradient(cx, cy, 0, cx, cy, t.w * 1.6);
-    glow.addColorStop(0, "rgba(251,191,36,0.9)");
-    glow.addColorStop(1, "rgba(251,191,36,0)");
-    ctx.fillStyle = glow;
-    ctx.beginPath();
-    ctx.arc(cx, cy, t.w * 1.6, 0, TAU);
-    ctx.fill();
+      const cx = sx + t.w / 2;
+      const cy = sy + t.h / 2;
 
-    // body
-    ctx.fillStyle = "#020617";
-    ctx.strokeStyle = "#facc15";
-    ctx.lineWidth = 2;
-    ctx.beginPath();
-    ctx.roundRect(sx, sy, t.w, t.h, 6);
-    ctx.fill();
-    ctx.stroke();
+      const glow = ctx.createRadialGradient(cx, cy, 0, cx, cy, t.w * 1.6);
+      glow.addColorStop(0, "rgba(251,191,36,0.9)");
+      glow.addColorStop(1, "rgba(251,191,36,0)");
+      ctx.fillStyle = glow;
+      ctx.beginPath();
+      ctx.arc(cx, cy, t.w * 1.6, 0, TAU);
+      ctx.fill();
 
-    // eye
-    ctx.fillStyle = "#facc15";
-    ctx.beginPath();
-    ctx.arc(cx, sy + t.h * 0.25, 5, 0, TAU);
-    ctx.fill();
+      ctx.fillStyle = "#020617";
+      ctx.strokeStyle = "#facc15";
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.roundRect(sx, sy, t.w, t.h, 6);
+      ctx.fill();
+      ctx.stroke();
 
-    // barrel pointing down-ish
-    ctx.strokeStyle = "#f97316";
-    ctx.lineWidth = 3;
-    ctx.beginPath();
-    ctx.moveTo(cx, cy + t.h * 0.1);
-    ctx.lineTo(cx, cy + t.h * 0.45);
-    ctx.stroke();
+      ctx.fillStyle = "#facc15";
+      ctx.beginPath();
+      ctx.arc(cx, sy + t.h * 0.25, 5, 0, TAU);
+      ctx.fill();
+
+      ctx.strokeStyle = "#f97316";
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.moveTo(cx, cy + t.h * 0.1);
+      ctx.lineTo(cx, cy + t.h * 0.45);
+      ctx.stroke();
+    }
+    ctx.restore();
   }
-  ctx.restore();
-}
 
   function drawPlayer() {
     const px = player.x - camera.x;
@@ -2075,212 +2179,176 @@ function drawTurrets() {
   }
 
   function drawHUD() {
-  const cfg = LEVELS[game.levelIndex] || LEVELS[0];
+    const cfg = LEVELS[game.levelIndex] || LEVELS[0];
 
-  ctx.save();
-  ctx.fillStyle = "rgba(15,23,42,0.9)";
-  ctx.fillRect(0, 0, WIDTH, 60);
+    ctx.save();
+    ctx.fillStyle = "rgba(15,23,42,0.9)";
+    ctx.fillRect(0, 0, WIDTH, 60);
 
-  // HP bar
-  const hpRatio = clamp(player.hp / player.maxHp, 0, 1);
-  const hpX = 16;
-  const hpY = 16;
-  const hpW = 200;
-  const hpH = 10;
-  ctx.fillStyle = "#020617";
-  ctx.fillRect(hpX, hpY, hpW, hpH);
-  const hpGrad = ctx.createLinearGradient(hpX, hpY, hpX + hpW, hpY);
-  hpGrad.addColorStop(0, "#22c55e");
-  hpGrad.addColorStop(1, "#f97316");
-  ctx.fillStyle = hpGrad;
-  ctx.fillRect(hpX, hpY, hpW * hpRatio, hpH);
-  ctx.strokeStyle = "#111827";
-  ctx.strokeRect(hpX, hpY, hpW, hpH);
-  ctx.fillStyle = "#e5e7eb";
-  ctx.font = "11px system-ui";
-  ctx.textAlign = "left";
-  ctx.textBaseline = "bottom";
-  ctx.fillText("HP", hpX, hpY - 2);
+    const hpRatio = clamp(player.hp / player.maxHp, 0, 1);
+    const hpX = 16, hpY = 16, hpW = 200, hpH = 10;
+    ctx.fillStyle = "#020617";
+    ctx.fillRect(hpX, hpY, hpW, hpH);
+    const hpGrad = ctx.createLinearGradient(hpX, hpY, hpX + hpW, hpY);
+    hpGrad.addColorStop(0, "#22c55e");
+    hpGrad.addColorStop(1, "#f97316");
+    ctx.fillStyle = hpGrad;
+    ctx.fillRect(hpX, hpY, hpW * hpRatio, hpH);
+    ctx.strokeStyle = "#111827";
+    ctx.strokeRect(hpX, hpY, hpW, hpH);
+    ctx.fillStyle = "#e5e7eb";
+    ctx.font = "11px system-ui";
+    ctx.textAlign = "left";
+    ctx.textBaseline = "bottom";
+    ctx.fillText("HP", hpX, hpY - 2);
 
-  // Shield bar
-  const shX = 16;
-  const shY = 34;
-  const shW = 200;
-  const shH = 6;
-  const shRatio = clamp(player.shield / player.maxShield, 0, 1);
-  ctx.fillStyle = "#020617";
-  ctx.fillRect(shX, shY, shW, shH);
-  ctx.fillStyle = "#38bdf8";
-  ctx.fillRect(shX, shY, shW * shRatio, shH);
-  ctx.strokeStyle = "#111827";
-  ctx.strokeRect(shX, shY, shW, shH);
+    const shX = 16, shY = 34, shW = 200, shH = 6;
+    const shRatio = clamp(player.shield / player.maxShield, 0, 1);
+    ctx.fillStyle = "#020617";
+    ctx.fillRect(shX, shY, shW, shH);
+    ctx.fillStyle = "#38bdf8";
+    ctx.fillRect(shX, shY, shW * shRatio, shH);
+    ctx.strokeStyle = "#111827";
+    ctx.strokeRect(shX, shY, shW, shH);
 
-  // Score / best (right)
-  ctx.fillStyle = "#e5e7eb";
-  ctx.font = "13px system-ui";
-  ctx.textAlign = "right";
-  ctx.textBaseline = "top";
-  ctx.fillText(`Score: ${game.score}`, WIDTH - 18, 10);
-  ctx.fillText(`Best: ${game.bestScore}`, WIDTH - 18, 26);
+    ctx.fillStyle = "#e5e7eb";
+    ctx.font = "13px system-ui";
+    ctx.textAlign = "right";
+    ctx.textBaseline = "top";
+    ctx.fillText(`Score: ${game.score}`, WIDTH - 18, 10);
+    ctx.fillText(`Best: ${game.bestScore}`, WIDTH - 18, 26);
 
-  // LEVEL INFO (center)  🔥
-  ctx.textAlign = "center";
-  ctx.font = "11px system-ui";
-  ctx.fillStyle = "#9ca3af";
-  ctx.fillText(
-    `Level ${game.levelIndex + 1}/${LEVELS.length} – ${cfg.shortName} – Distance: ${Math.floor(game.distance)} / ${game.levelLength}`,
-    WIDTH / 2,
-    10
-  );
+    ctx.textAlign = "center";
+    ctx.font = "11px system-ui";
+    ctx.fillStyle = "#9ca3af";
+    ctx.fillText(
+      `Level ${game.levelIndex + 1}/${LEVELS.length} – ${cfg.shortName} – Distance: ${Math.floor(game.distance)} / ${game.levelLength}`,
+      WIDTH / 2,
+      10
+    );
 
-  // Controls (bottom-left)
-  ctx.textAlign = "left";
-  ctx.font = "10px system-ui";
-  ctx.fillStyle = "#9ca3af";
-  ctx.fillText("Move: A / D or Arrows · Jump: Space / W / ↑ (double jump)", 16, 50);
-  ctx.fillText("Dash: Shift · Pause: P", 16, 62);
+    ctx.textAlign = "left";
+    ctx.font = "10px system-ui";
+    ctx.fillStyle = "#9ca3af";
+    ctx.fillText(
+      IS_MOBILE
+        ? "Move: Joystick · Jump: Tap/JUMP (double) · Dash: DASH · Pause: ⏸"
+        : "Move: A / D or Arrows · Jump: Space / W / ↑ (double jump)",
+      16, 50
+    );
+    if (!IS_MOBILE) ctx.fillText("Dash: Shift · Pause: P", 16, 62);
 
-  ctx.restore();
-}
-
+    ctx.restore();
+  }
 
   function drawOverlay() {
-  const cfg = LEVELS[game.levelIndex] || LEVELS[0];
+    const cfg = LEVELS[game.levelIndex] || LEVELS[0];
 
-  ctx.save();
-  ctx.textAlign = "center";
-  ctx.textBaseline = "middle";
+    ctx.save();
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
 
-  const cx = WIDTH / 2;
-  const cy = HEIGHT / 2;
+    const cx = WIDTH / 2;
+    const cy = HEIGHT / 2;
 
-  // --- MENU ---
-  if (game.state === "menu") {
-    ctx.fillStyle = "rgba(15,23,42,0.9)";
-    ctx.fillRect(0, 0, WIDTH, HEIGHT);
+    if (game.state === "menu") {
+      ctx.fillStyle = "rgba(15,23,42,0.9)";
+      ctx.fillRect(0, 0, WIDTH, HEIGHT);
 
-    ctx.fillStyle = "#e5e7eb";
-    ctx.font = "32px system-ui";
-    ctx.fillText("NEO RUNNER", cx, cy - 70);
+      ctx.fillStyle = "#e5e7eb";
+      ctx.font = "32px system-ui";
+      ctx.fillText("NEO RUNNER", cx, cy - 70);
 
-    ctx.font = "16px system-ui";
-    ctx.fillText("Futuristic runner with levels, hazards and dashes.", cx, cy - 30);
-    ctx.fillText("Move: A / D or Arrows · Jump: Space / W / ↑ (double jump)", cx, cy);
-    ctx.fillText("Dash: Shift · Pause: P", cx, cy + 26);
+      ctx.font = "16px system-ui";
+      ctx.fillText("Futuristic runner with levels, hazards and dashes.", cx, cy - 30);
 
-    ctx.font = "13px system-ui";
-    ctx.fillStyle = "#9ca3af";
-    ctx.fillText(
-      `Campaign: ${LEVELS.length} sectors · Starting at Level 1/${LEVELS.length}`,
-      cx,
-      cy + 54
-    );
+      ctx.font = "15px system-ui";
+      ctx.fillText(
+        IS_MOBILE
+          ? "Move: Joystick · Jump: Tap/JUMP (double) · Dash: DASH · Pause: ⏸"
+          : "Move: A / D or Arrows · Jump: Space / W / ↑ (double jump)",
+        cx, cy
+      );
+      if (!IS_MOBILE) ctx.fillText("Dash: Shift · Pause: P", cx, cy + 26);
 
-    ctx.fillStyle = "#e5e7eb";
-    ctx.fillText("Press ENTER or click to start", cx, cy + 80);
+      ctx.font = "13px system-ui";
+      ctx.fillStyle = "#9ca3af";
+      ctx.fillText(`Campaign: ${LEVELS.length} sectors · Starting at Level 1/${LEVELS.length}`, cx, cy + 54);
+
+      ctx.fillStyle = "#e5e7eb";
+      ctx.fillText(IS_MOBILE ? "Tap to start" : "Press ENTER or click to start", cx, cy + 80);
+    }
+    else if (game.state === "paused") {
+      ctx.fillStyle = "rgba(15,23,42,0.6)";
+      ctx.fillRect(0, 0, WIDTH, HEIGHT);
+
+      ctx.fillStyle = "#e5e7eb";
+      ctx.font = "26px system-ui";
+      ctx.fillText("PAUSED", cx, cy - 10);
+      ctx.font = "14px system-ui";
+      ctx.fillText(IS_MOBILE ? "Tap ⏸ to resume" : "Press P to resume", cx, cy + 18);
+    }
+    else if (game.state === "gameover") {
+      ctx.fillStyle = "rgba(15,23,42,0.85)";
+      ctx.fillRect(0, 0, WIDTH, HEIGHT);
+
+      ctx.fillStyle = "#f97373";
+      ctx.font = "28px system-ui";
+      ctx.fillText("RUN TERMINATED", cx, cy - 60);
+
+      ctx.fillStyle = "#e5e7eb";
+      ctx.font = "15px system-ui";
+      ctx.fillText(`Level ${game.levelIndex + 1} / ${LEVELS.length} – ${cfg.shortName}`, cx, cy - 22);
+
+      ctx.font = "14px system-ui";
+      ctx.fillText(`Distance: ${Math.floor(game.distance)} / ${game.levelLength}`, cx, cy + 2);
+      ctx.fillText(`Score: ${game.score} · Best: ${game.bestScore}`, cx, cy + 26);
+
+      ctx.font = "13px system-ui";
+      ctx.fillStyle = "#9ca3af";
+      ctx.fillText(IS_MOBILE ? "Tap to retry from Level 1" : "Press ENTER or click to retry this level", cx, cy + 56);
+    }
+    else if (game.state === "victory") {
+      ctx.fillStyle = "rgba(15,23,42,0.85)";
+      ctx.fillRect(0, 0, WIDTH, HEIGHT);
+
+      ctx.fillStyle = "#22c55e";
+      ctx.font = "28px system-ui";
+      ctx.fillText("SECTOR CLEARED!", cx, cy - 60);
+
+      ctx.fillStyle = "#e5e7eb";
+      ctx.font = "15px system-ui";
+      ctx.fillText(`Level ${game.levelIndex + 1} / ${LEVELS.length} – ${cfg.shortName}`, cx, cy - 24);
+      ctx.fillText(`Distance: ${Math.floor(game.distance)} / ${game.levelLength}`, cx, cy + 0);
+      ctx.fillText(`Score: ${game.score} · Best: ${game.bestScore}`, cx, cy + 24);
+
+      ctx.font = "13px system-ui";
+      ctx.fillStyle = "#9ca3af";
+      ctx.fillText(IS_MOBILE ? "Tap for next level" : "Press ENTER or click for next level", cx, cy + 54);
+    }
+
+    ctx.restore();
   }
 
-  // --- PAUSED ---
-  else if (game.state === "paused") {
-    ctx.fillStyle = "rgba(15,23,42,0.6)";
-    ctx.fillRect(0, 0, WIDTH, HEIGHT);
+  function draw() {
+    drawBackground();
+    drawPlatforms();
+    drawHazards();
+    drawOrbs();
+    drawDrones();
+    drawTurrets();
+    drawParticles();
 
-    ctx.fillStyle = "#e5e7eb";
-    ctx.font = "26px system-ui";
-    ctx.fillText("PAUSED", cx, cy - 10);
-    ctx.font = "14px system-ui";
-    ctx.fillText("Press P to resume", cx, cy + 18);
+    if (game.state !== "menu" && game.state !== "gameover" && game.state !== "victory") {
+      drawPlayer();
+      drawPortal();
+      drawHUD();
+    } else {
+      drawPortal();
+    }
+
+    drawOverlay();
   }
-
-  // --- GAME OVER ---
-  else if (game.state === "gameover") {
-    ctx.fillStyle = "rgba(15,23,42,0.85)";
-    ctx.fillRect(0, 0, WIDTH, HEIGHT);
-
-    ctx.fillStyle = "#f97373";
-    ctx.font = "28px system-ui";
-    ctx.fillText("RUN TERMINATED", cx, cy - 60);
-
-    ctx.fillStyle = "#e5e7eb";
-    ctx.font = "15px system-ui";
-    ctx.fillText(
-      `Level ${game.levelIndex + 1} / ${LEVELS.length} – ${cfg.shortName}`,
-      cx,
-      cy - 22
-    );
-
-    ctx.font = "14px system-ui";
-    ctx.fillText(
-      `Distance: ${Math.floor(game.distance)} / ${game.levelLength}`,
-      cx,
-      cy + 2
-    );
-    ctx.fillText(
-      `Score: ${game.score} · Best: ${game.bestScore}`,
-      cx,
-      cy + 26
-    );
-
-    ctx.font = "13px system-ui";
-    ctx.fillStyle = "#9ca3af";
-    ctx.fillText("Press ENTER or click to retry this level", cx, cy + 56);
-    ctx.fillText("Press M to return to main hub (if you added one)", cx, cy + 78);
-  }
-
-  // --- LEVEL COMPLETE / VICTORY ---
-  else if (game.state === "victory") {
-    ctx.fillStyle = "rgba(15,23,42,0.85)";
-    ctx.fillRect(0, 0, WIDTH, HEIGHT);
-
-    ctx.fillStyle = "#22c55e";
-    ctx.font = "28px system-ui";
-    ctx.fillText("SECTOR CLEARED!", cx, cy - 60);
-
-    ctx.fillStyle = "#e5e7eb";
-    ctx.font = "15px system-ui";
-    ctx.fillText(
-      `Level ${game.levelIndex + 1} / ${LEVELS.length} – ${cfg.shortName}`,
-      cx,
-      cy - 24
-    );
-    ctx.fillText(
-      `Distance: ${Math.floor(game.distance)} / ${game.levelLength}`,
-      cx,
-      cy + 0
-    );
-    ctx.fillText(
-      `Score: ${game.score} · Best: ${game.bestScore}`,
-      cx,
-      cy + 24
-    );
-
-    ctx.font = "13px system-ui";
-    ctx.fillStyle = "#9ca3af";
-    ctx.fillText("Press ENTER or click for next level (or restart)", cx, cy + 54);
-  }
-
-  ctx.restore();
-}
-
-
- function draw() {
-  drawBackground();
-  drawPlatforms();
-  drawHazards();
-  drawOrbs();
-  drawDrones();
-  drawTurrets();   // 👈 NEW
-  drawParticles();
-  if (game.state !== "menu" && game.state !== "gameover" && game.state !== "victory") {
-    drawPlayer();
-    drawPortal();
-    drawHUD();
-  } else {
-    drawPortal();
-  }
-  drawOverlay();
-}
-
 
   // ---------- Main Loop ----------
   let lastTime = performance.now();
@@ -2298,7 +2366,8 @@ function drawTurrets() {
   requestAnimationFrame(loop);
 })();
 </script>
-</body>
-<script src="footer.js"></script>
 
+<!-- keep footer.js, but place before </body> -->
+<script src="footer.js"></script>
+</body>
 </html>
