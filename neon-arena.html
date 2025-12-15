@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <title>Neon Arena – Campaign</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
   <!-- ✅ AUTO ADS: keep ONLY this one AdSense loader (same as index.html) -->
   <script async
@@ -24,17 +24,14 @@
       display: flex;
       justify-content: center;
       align-items: stretch;
-      overflow: hidden;
     }
 
-    /* --------- LAYOUT: side spacing + main game --------- */
     .page-wrap {
       display: flex;
       width: 100%;
       max-width: 1440px;
       padding: 12px;
       gap: 12px;
-      height: 100vh;
     }
 
     .side-banner {
@@ -45,13 +42,11 @@
       padding: 4px;
     }
 
-    /* Hide side columns on small screens */
     @media (max-width: 1024px) {
       .side-banner { display: none; }
       .page-wrap { justify-content: center; padding: 10px; }
     }
 
-    /* --------- MAIN GAME PANEL --------- */
     .main-game {
       flex: 1 1 auto;
       background: rgba(15,23,42,0.95);
@@ -61,17 +56,14 @@
       display: flex;
       flex-direction: column;
       overflow: hidden;
-      min-height: 0; /* needed for flex children scrolling */
     }
 
-    /* Top strip (Auto Ads can still place ads on the page) */
     .top-banner {
       padding: 0.6rem 1.2rem 0.4rem;
       border-bottom: 1px solid #111827;
       background: #020617;
       display: flex;
       justify-content: center;
-      flex: 0 0 auto;
     }
     .top-banner-inner {
       width: 100%;
@@ -79,10 +71,9 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      min-height: 18px; /* small spacer */
+      min-height: 18px;
     }
 
-    /* Game header above canvas */
     .game-header {
       padding: 0.55rem 1.2rem;
       border-bottom: 1px solid #111827;
@@ -93,7 +84,6 @@
       font-size: 0.9rem;
       gap: 0.8rem;
       flex-wrap: wrap;
-      flex: 0 0 auto;
     }
     .game-header .title {
       font-weight: 700;
@@ -110,35 +100,30 @@
     }
     .game-header a:hover { border-color: #6366f1; }
 
-    /* Game body */
     .game-body {
       flex: 1 1 auto;
       display: flex;
       justify-content: center;
       align-items: center;
       padding: 0.75rem 1.2rem 1rem;
-      overflow: hidden;
-      position: relative; /* for overlay controls */
-      min-height: 0;
+      overflow: auto;
+      position: relative; /* for mobile controls overlay */
     }
 
     canvas {
       width: 100%;
       max-width: 960px;
-      aspect-ratio: 16 / 9;      /* ✅ keeps nice shape on mobile */
+      aspect-ratio: 16 / 9;
       height: auto;
       border-radius: 12px;
       border: 1px solid #4b5563;
       background: radial-gradient(circle at top, #0f172a 0, #020617 55%, #000 100%);
       box-shadow: 0 20px 50px rgba(0,0,0,0.8);
       cursor: crosshair;
-      touch-action: none;        /* ✅ important for touch aiming */
-      display: block;
+      touch-action: none; /* important */
     }
 
-    /* ✅ Mobile adjustments */
     @media (max-width: 700px) {
-      body { overflow: hidden; }
       .page-wrap { padding: 8px; gap: 8px; }
       .top-banner { padding: 0.35rem 0.6rem 0.25rem; }
       .game-header { padding: 0.5rem 0.7rem; font-size: 0.85rem; }
@@ -147,121 +132,167 @@
       canvas { max-width: 100%; }
     }
 
-    /* =======================
-       MOBILE CONTROLS OVERLAY
-       ======================= */
+    /* =========================
+       MOBILE CONTROLS (overlay)
+       ========================= */
     .mobile-controls {
       position: absolute;
       inset: 0;
-      pointer-events: none; /* container doesn't block canvas */
+      pointer-events: none; /* enable only on children */
+      display: none;
     }
 
-    .joy {
+    /* Show controls on touch-ish widths */
+    @media (max-width: 900px) {
+      .mobile-controls { display: block; }
+    }
+
+    .mc-joystick {
       position: absolute;
-      left: 14px;
-      bottom: 14px;
-      width: 120px;
-      height: 120px;
-      border-radius: 50%;
-      background: rgba(2,6,23,0.40);
-      border: 1px solid rgba(148,163,184,0.25);
+      left: 12px;
+      bottom: 12px;
+      width: 140px;
+      height: 140px;
+      border-radius: 999px;
+      background: rgba(2,6,23,0.55);
+      border: 1px solid rgba(148,163,184,0.35);
       box-shadow: 0 12px 28px rgba(0,0,0,0.55);
       pointer-events: auto;
       touch-action: none;
-      backdrop-filter: blur(4px);
     }
 
-    .joy-thumb {
+    .mc-joystick::after {
+      content: "";
+      position: absolute;
+      inset: 18px;
+      border-radius: 999px;
+      border: 1px dashed rgba(148,163,184,0.25);
+    }
+
+    .mc-knob {
       position: absolute;
       left: 50%;
       top: 50%;
-      width: 46px;
-      height: 46px;
-      border-radius: 50%;
+      width: 54px;
+      height: 54px;
       transform: translate(-50%, -50%);
-      background: rgba(56,189,248,0.85);
-      border: 1px solid rgba(224,242,254,0.35);
-      box-shadow: 0 10px 20px rgba(56,189,248,0.25);
+      border-radius: 999px;
+      background: rgba(56,189,248,0.25);
+      border: 1px solid rgba(56,189,248,0.55);
+      box-shadow: 0 10px 18px rgba(0,0,0,0.5);
+    }
+
+    .mc-buttons {
+      position: absolute;
+      right: 12px;
+      bottom: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      pointer-events: none;
+    }
+
+    .mc-row {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+      pointer-events: none;
     }
 
     .mc-btn {
-      position: absolute;
       pointer-events: auto;
       touch-action: none;
       user-select: none;
       -webkit-user-select: none;
-      width: 64px;
-      height: 64px;
-      border-radius: 18px;
-      background: rgba(2,6,23,0.55);
-      border: 1px solid rgba(148,163,184,0.28);
-      box-shadow: 0 12px 28px rgba(0,0,0,0.55);
-      display: flex;
+      width: 104px;
+      height: 52px;
+      border-radius: 14px;
+      border: 1px solid rgba(148,163,184,0.35);
+      background: rgba(2,6,23,0.65);
+      color: #e5e7eb;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      display: inline-flex;
       align-items: center;
       justify-content: center;
-      font-weight: 800;
-      font-size: 0.72rem;
-      letter-spacing: 0.04em;
-      color: #e5e7eb;
-      backdrop-filter: blur(4px);
+      box-shadow: 0 12px 26px rgba(0,0,0,0.55);
+      opacity: 0.95;
+    }
+    .mc-btn:active { transform: translateY(1px); opacity: 1; }
+
+    .mc-btn.shoot { border-color: rgba(236,72,153,0.55); }
+    .mc-btn.dash  { border-color: rgba(56,189,248,0.55); }
+    .mc-btn.pause { border-color: rgba(34,197,94,0.55); width: 86px; height: 44px; border-radius: 999px; }
+
+    .mc-top {
+      position: absolute;
+      right: 12px;
+      top: 10px;
+      pointer-events: none;
     }
 
-    .mc-btn:active { transform: scale(0.98); }
+    .mc-hint {
+      position: absolute;
+      left: 12px;
+      top: 10px;
+      pointer-events: none;
+      font-size: 12px;
+      color: rgba(203,213,245,0.9);
+      background: rgba(2,6,23,0.45);
+      border: 1px solid rgba(148,163,184,0.25);
+      border-radius: 999px;
+      padding: 6px 10px;
+      max-width: 75%;
+      opacity: 0.9;
+    }
 
-    .btn-shoot { right: 16px; bottom: 16px; width: 74px; height: 74px; border-radius: 22px; }
-    .btn-dash  { right: 22px; bottom: 102px; width: 62px; height: 62px; }
-    .btn-pause { right: 12px; top: 12px; width: 48px; height: 48px; border-radius: 16px; font-size: 0.9rem; }
-
-    @media (min-width: 1025px) {
-      .mobile-controls { display: none; }
+    @media (max-width: 420px) {
+      .mc-joystick { width: 126px; height: 126px; }
+      .mc-btn { width: 96px; height: 50px; }
     }
   </style>
 </head>
 <body>
 
 <div class="page-wrap">
-
-  <!-- LEFT COLUMN (kept empty for Auto Ads spacing) -->
   <aside class="side-banner"></aside>
 
-  <!-- MAIN GAME PANEL -->
   <main class="main-game">
+    <div class="top-banner"><div class="top-banner-inner"></div></div>
 
-    <!-- TOP STRIP (Auto Ads handles placement) -->
-    <div class="top-banner">
-      <div class="top-banner-inner"></div>
-    </div>
-
-    <!-- GAME HEADER -->
     <div class="game-header">
       <div class="title">Neon Arena – Campaign</div>
-      <div>
-        <a href="index.html">⬅ Back to Hub</a>
-      </div>
+      <div><a href="index.html">⬅ Back to Hub</a></div>
     </div>
 
-    <!-- GAME BODY -->
     <div class="game-body">
-      <!-- Keep internal resolution stable for gameplay logic -->
       <canvas id="gameCanvas" width="960" height="540"></canvas>
 
-      <!-- ✅ MOBILE CONTROLS -->
-      <div class="mobile-controls" aria-hidden="true">
-        <div id="joy" class="joy">
-          <div id="joyThumb" class="joy-thumb"></div>
+      <!-- ✅ Mobile controls overlay -->
+      <div class="mobile-controls" id="mobileControls" aria-hidden="true">
+        <div class="mc-hint" id="mcHint">Use joystick to move • Drag on game to aim • Hold SHOOT • Tap to open map/menu</div>
+
+        <div class="mc-joystick" id="joyBase">
+          <div class="mc-knob" id="joyKnob"></div>
         </div>
 
-        <div id="btnShoot" class="mc-btn btn-shoot">SHOOT</div>
-        <div id="btnDash"  class="mc-btn btn-dash">DASH</div>
-        <div id="btnPause" class="mc-btn btn-pause">⏸</div>
+        <div class="mc-top">
+          <button class="mc-btn pause" id="btnPause" type="button">⏸</button>
+        </div>
+
+        <div class="mc-buttons">
+          <div class="mc-row">
+            <button class="mc-btn dash" id="btnDash" type="button">DASH</button>
+          </div>
+          <div class="mc-row">
+            <button class="mc-btn shoot" id="btnShoot" type="button">SHOOT</button>
+          </div>
+        </div>
       </div>
     </div>
-
   </main>
 
-  <!-- RIGHT COLUMN (kept empty for Auto Ads spacing) -->
   <aside class="side-banner"></aside>
-
 </div>
 
 <script>
@@ -277,113 +308,10 @@
   const TAU = Math.PI * 2;
   const PROGRESS_KEY = "neon_arena_campaign_progress_v1";
 
-  // =========================
-  // ✅ MOBILE CONTROL STATE
-  // =========================
-  const isMobile = window.matchMedia && window.matchMedia("(max-width: 1024px)").matches;
-  const mobile = {
-    moveX: 0,
-    moveY: 0,
-    shootDown: false,
-    dashTap: false
-  };
-
-  const joy = document.getElementById("joy");
-  const joyThumb = document.getElementById("joyThumb");
-  const btnShoot = document.getElementById("btnShoot");
-  const btnDash  = document.getElementById("btnDash");
-  const btnPause = document.getElementById("btnPause");
-
-  function setThumb(dx, dy) {
-    // dx/dy are pixels from center
-    joyThumb.style.transform = `translate(${dx}px, ${dy}px) translate(-50%, -50%)`;
-  }
-
-  function clamp01(v) { return Math.max(-1, Math.min(1, v)); }
-
-  if (joy) {
-    let active = false;
-    let centerX = 0, centerY = 0;
-    const maxR = 46;
-
-    function start(e) {
-      active = true;
-      const rect = joy.getBoundingClientRect();
-      centerX = rect.left + rect.width / 2;
-      centerY = rect.top + rect.height / 2;
-      move(e);
-    }
-
-    function move(e) {
-      if (!active) return;
-      const t = e.touches ? e.touches[0] : e;
-      if (!t) return;
-      const dx = t.clientX - centerX;
-      const dy = t.clientY - centerY;
-      const d = Math.hypot(dx, dy) || 1;
-      const r = Math.min(d, maxR);
-      const nx = (dx / d) * r;
-      const ny = (dy / d) * r;
-
-      // normalized -1..1
-      mobile.moveX = clamp01(nx / maxR);
-      mobile.moveY = clamp01(ny / maxR);
-
-      setThumb(nx, ny);
-    }
-
-    function end() {
-      active = false;
-      mobile.moveX = 0;
-      mobile.moveY = 0;
-      setThumb(0, 0);
-    }
-
-    joy.addEventListener("touchstart", (e) => { e.preventDefault(); start(e); }, { passive: false });
-    joy.addEventListener("touchmove",  (e) => { e.preventDefault(); move(e); },  { passive: false });
-    joy.addEventListener("touchend",   (e) => { e.preventDefault(); end(); },   { passive: false });
-    joy.addEventListener("touchcancel",(e) => { e.preventDefault(); end(); },   { passive: false });
-  }
-
-  function bindHold(btn, onDown, onUp) {
-    if (!btn) return;
-    btn.addEventListener("touchstart", (e) => { e.preventDefault(); onDown(); }, { passive: false });
-    btn.addEventListener("touchend",   (e) => { e.preventDefault(); onUp();   }, { passive: false });
-    btn.addEventListener("touchcancel",(e) => { e.preventDefault(); onUp();   }, { passive: false });
-  }
-
-  bindHold(btnShoot,
-    () => { mobile.shootDown = true; },
-    () => { mobile.shootDown = false; }
-  );
-
-  if (btnDash) {
-    btnDash.addEventListener("touchstart", (e) => {
-      e.preventDefault();
-      mobile.dashTap = true; // consumed in update()
-    }, { passive: false });
-  }
-
-  if (btnPause) {
-    btnPause.addEventListener("touchstart", (e) => {
-      e.preventDefault();
-      if (game.state === "playing") game.state = "paused";
-      else if (game.state === "paused") game.state = "playing";
-    }, { passive: false });
-  }
-
   // ---------- Utils ----------
-  function clamp(v, min, max) {
-    return v < min ? min : v > max ? max : v;
-  }
-  function randRange(min, max) {
-    return Math.random() * (max - min) + min;
-  }
-  function dist(a, b) {
-    const dx = a.x - b.x;
-    const dy = a.y - b.y;
-    return Math.sqrt(dx * dx + dy * dy);
-  }
+  function clamp(v, min, max) { return v < min ? min : v > max ? max : v; }
+  function randRange(min, max) { return Math.random() * (max - min) + min; }
+  function dist(a, b) { const dx = a.x - b.x; const dy = a.y - b.y; return Math.sqrt(dx * dx + dy * dy); }
   function circleRectCollision(px, py, pr, rx, ry, rw, rh) {
     const cx = clamp(px, rx, rx + rw);
     const cy = clamp(py, ry, ry + rh);
@@ -396,47 +324,6 @@
   const keys = {};
   const mouse = { x: WIDTH / 2, y: HEIGHT / 2, down: false };
 
-  window.addEventListener("keydown", (e) => {
-    keys[e.key.toLowerCase()] = true;
-    if (e.key === " ") e.preventDefault();
-
-    if (e.key === "p" || e.key === "P") {
-      if (game.state === "playing") game.state = "paused";
-      else if (game.state === "paused") game.state = "playing";
-    }
-    if (e.key === "h" || e.key === "H") {
-      game.showHelp = !game.showHelp;
-    }
-    if (e.key === "Enter") {
-      if (game.state === "menu") {
-        goToMap();
-      } else if (game.state === "gameover") {
-        startLevel(game.currentLevelIndex);
-      } else if (game.state === "levelcomplete") {
-        const next = game.currentLevelIndex + 1;
-        if (next < game.levels.length && progress.unlocked > next) {
-          startLevel(next);
-        } else {
-          goToMap();
-        }
-      }
-    }
-    if (e.key === "m" || e.key === "M") {
-      if (game.state === "gameover" || game.state === "levelcomplete") {
-        goToMap();
-      } else if (game.state === "map") {
-        goToMenu();
-      }
-    }
-    if (e.key === " " || e.key === "Shift") {
-      tryDash();
-    }
-  });
-
-  window.addEventListener("keyup", (e) => {
-    keys[e.key.toLowerCase()] = false;
-  });
-
   function setMouseFromClient(clientX, clientY) {
     const rect = canvas.getBoundingClientRect();
     const scaleX = canvas.width / rect.width;
@@ -445,113 +332,227 @@
     mouse.y = (clientY - rect.top) * scaleY;
   }
 
-  canvas.addEventListener("mousemove", (e) => {
-    setMouseFromClient(e.clientX, e.clientY);
+  window.addEventListener("keydown", (e) => {
+    keys[e.key.toLowerCase()] = true;
+    if (e.key === " ") e.preventDefault();
+
+    if (e.key === "p" || e.key === "P") togglePause();
+    if (e.key === "h" || e.key === "H") game.showHelp = !game.showHelp;
+
+    if (e.key === "Enter") {
+      if (game.state === "menu") goToMap();
+      else if (game.state === "gameover") startLevel(game.currentLevelIndex);
+      else if (game.state === "levelcomplete") {
+        const next = game.currentLevelIndex + 1;
+        if (next < game.levels.length && progress.unlocked > next) startLevel(next);
+        else goToMap();
+      }
+    }
+
+    if (e.key === "m" || e.key === "M") {
+      if (game.state === "gameover" || game.state === "levelcomplete") goToMap();
+      else if (game.state === "map") goToMenu();
+    }
+
+    if (e.key === " " || e.key === "Shift") tryDash();
   });
 
+  window.addEventListener("keyup", (e) => { keys[e.key.toLowerCase()] = false; });
+
+  canvas.addEventListener("mousemove", (e) => setMouseFromClient(e.clientX, e.clientY));
   canvas.addEventListener("mousedown", () => { mouse.down = true; });
   window.addEventListener("mouseup", () => { mouse.down = false; });
 
-  // ✅ Mobile: touch aiming on canvas only (NOT on buttons)
+  // ---------- Tap handler (desktop + mobile) ----------
   function handleCanvasTap(clientX, clientY) {
-  const rect = canvas.getBoundingClientRect();
-  const scaleX = canvas.width / rect.width;
-  const scaleY = canvas.height / rect.height;
-  const mx = (clientX - rect.left) * scaleX;
-  const my = (clientY - rect.top) * scaleY;
+    const rect = canvas.getBoundingClientRect();
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+    const mx = (clientX - rect.left) * scaleX;
+    const my = (clientY - rect.top) * scaleY;
 
-  // top-right canvas buttons
-  if (menuButton &&
-      mx >= menuButton.x && mx <= menuButton.x + menuButton.w &&
-      my >= menuButton.y && my <= menuButton.y + menuButton.h) {
-    goToMenu();
-    return true;
-  }
-
-  if (homeButton &&
-      mx >= homeButton.x && mx <= homeButton.x + homeButton.w &&
-      my >= homeButton.y && my <= homeButton.y + homeButton.h) {
-    window.location.href = "index.html";
-    return true;
-  }
-
-  // menu -> map
-  if (game.state === "menu") {
-    goToMap();
-    return true;
-  }
-
-  // map -> start level
-  if (game.state === "map") {
-    for (let i = 0; i < game.mapRects.length; i++) {
-      const r = game.mapRects[i];
-      if (!r) continue;
-      if (mx >= r.x && mx <= r.x + r.w && my >= r.y && my <= r.y + r.h) {
-        if (i < progress.unlocked) startLevel(i);
-        break;
-      }
+    // top-right canvas buttons (drawn in canvas)
+    if (menuButton &&
+        mx >= menuButton.x && mx <= menuButton.x + menuButton.w &&
+        my >= menuButton.y && my <= menuButton.y + menuButton.h) {
+      goToMenu();
+      return true;
     }
-    return true;
+
+    if (homeButton &&
+        mx >= homeButton.x && mx <= homeButton.x + homeButton.w &&
+        my >= homeButton.y && my <= homeButton.y + homeButton.h) {
+      window.location.href = "index.html";
+      return true;
+    }
+
+    // menu -> map
+    if (game.state === "menu") { goToMap(); return true; }
+
+    // map -> start level
+    if (game.state === "map") {
+      for (let i = 0; i < game.mapRects.length; i++) {
+        const r = game.mapRects[i];
+        if (!r) continue;
+        if (mx >= r.x && mx <= r.x + r.w && my >= r.y && my <= r.y + r.h) {
+          if (i < progress.unlocked) startLevel(i);
+          break;
+        }
+      }
+      return true;
+    }
+
+    return false;
   }
 
-  return false;
-}
+  // Desktop click
+  canvas.addEventListener("click", (e) => handleCanvasTap(e.clientX, e.clientY));
 
-// Desktop click
-canvas.addEventListener("click", (e) => {
-  handleCanvasTap(e.clientX, e.clientY);
-});
+  // Mobile: touch aiming on canvas + reliable tap-to-enter menu/map (tap = low movement)
+  let touchStartX = 0, touchStartY = 0, touchMoved = false;
+  canvas.addEventListener("touchstart", (e) => {
+    const target = e.target;
+    if (target && target.closest && target.closest(".mobile-controls")) return;
 
-// ✅ Mobile tap support (touchend) – triggers menu/map taps reliably
-let touchStartX = 0, touchStartY = 0, touchMoved = false;
+    e.preventDefault();
+    const t = e.touches[0];
+    if (!t) return;
 
-canvas.addEventListener("touchstart", (e) => {
-  const target = e.target;
-  if (target && target.closest && target.closest(".mobile-controls")) return;
+    touchStartX = t.clientX;
+    touchStartY = t.clientY;
+    touchMoved = false;
 
-  e.preventDefault();
-  const t = e.touches[0];
-  if (!t) return;
+    setMouseFromClient(t.clientX, t.clientY);
+  }, { passive: false });
 
-  touchStartX = t.clientX;
-  touchStartY = t.clientY;
-  touchMoved = false;
+  canvas.addEventListener("touchmove", (e) => {
+    const target = e.target;
+    if (target && target.closest && target.closest(".mobile-controls")) return;
 
-  setMouseFromClient(t.clientX, t.clientY);
-}, { passive: false });
+    e.preventDefault();
+    const t = e.touches[0];
+    if (!t) return;
 
-canvas.addEventListener("touchmove", (e) => {
-  const target = e.target;
-  if (target && target.closest && target.closest(".mobile-controls")) return;
+    if (Math.hypot(t.clientX - touchStartX, t.clientY - touchStartY) > 8) touchMoved = true;
+    setMouseFromClient(t.clientX, t.clientY);
+  }, { passive: false });
 
-  e.preventDefault();
-  const t = e.touches[0];
-  if (!t) return;
+  canvas.addEventListener("touchend", (e) => {
+    const target = e.target;
+    if (target && target.closest && target.closest(".mobile-controls")) return;
 
-  // mark as moved if finger dragged (so we don’t “tap” when aiming)
-  if (Math.hypot(t.clientX - touchStartX, t.clientY - touchStartY) > 8) {
-    touchMoved = true;
+    e.preventDefault();
+    if (touchMoved) return;
+
+    const t = e.changedTouches && e.changedTouches[0];
+    if (!t) return;
+
+    handleCanvasTap(t.clientX, t.clientY);
+  }, { passive: false });
+
+  // ---------- Mobile controls ----------
+  const mobileControls = document.getElementById("mobileControls");
+  const joyBase = document.getElementById("joyBase");
+  const joyKnob = document.getElementById("joyKnob");
+  const btnDash = document.getElementById("btnDash");
+  const btnPause = document.getElementById("btnPause");
+  const btnShoot = document.getElementById("btnShoot");
+  const mcHint = document.getElementById("mcHint");
+
+  // "Is mobile" heuristic: touch support + small-ish screen
+  const IS_MOBILE = (('ontouchstart' in window) || (navigator.maxTouchPoints > 0)) && window.matchMedia("(max-width: 900px)").matches;
+  if (mobileControls) mobileControls.style.display = IS_MOBILE ? "block" : "none";
+
+  const virtual = {
+    joyX: 0, joyY: 0,
+    shootHeld: false
+  };
+
+  let joyActive = false;
+  let joyPointerId = null;
+  let joyCenter = { x: 0, y: 0 };
+  const joyMax = 44; // px knob travel
+
+  function setKnob(dx, dy) {
+    joyKnob.style.transform = `translate(${dx}px, ${dy}px) translate(-50%, -50%)`;
   }
 
-  setMouseFromClient(t.clientX, t.clientY);
-}, { passive: false });
+  function resetJoystick() {
+    virtual.joyX = 0; virtual.joyY = 0;
+    joyActive = false;
+    joyPointerId = null;
+    setKnob(0, 0);
+  }
 
-canvas.addEventListener("touchend", (e) => {
-  const target = e.target;
-  if (target && target.closest && target.closest(".mobile-controls")) return;
+  function getJoyCenter() {
+    const r = joyBase.getBoundingClientRect();
+    joyCenter = { x: r.left + r.width / 2, y: r.top + r.height / 2 };
+  }
 
-  e.preventDefault();
+  function onJoyMove(clientX, clientY) {
+    const dx = clientX - joyCenter.x;
+    const dy = clientY - joyCenter.y;
+    const len = Math.hypot(dx, dy) || 1;
+    const clampedLen = Math.min(len, joyMax);
+    const nx = (dx / len) * clampedLen;
+    const ny = (dy / len) * clampedLen;
 
-  // only treat as a tap if finger didn’t move much
-  if (touchMoved) return;
+    // Normalize to [-1..1] based on joyMax
+    virtual.joyX = clamp(nx / joyMax, -1, 1);
+    virtual.joyY = clamp(ny / joyMax, -1, 1);
 
-  const t = e.changedTouches && e.changedTouches[0];
-  if (!t) return;
+    setKnob(nx, ny);
+  }
 
-  handleCanvasTap(t.clientX, t.clientY);
-}, { passive: false });
+  if (joyBase) {
+    joyBase.addEventListener("pointerdown", (e) => {
+      e.preventDefault();
+      joyBase.setPointerCapture(e.pointerId);
+      joyActive = true;
+      joyPointerId = e.pointerId;
+      getJoyCenter();
+      onJoyMove(e.clientX, e.clientY);
+    });
 
-  });
+    joyBase.addEventListener("pointermove", (e) => {
+      if (!joyActive || e.pointerId !== joyPointerId) return;
+      e.preventDefault();
+      onJoyMove(e.clientX, e.clientY);
+    });
+
+    joyBase.addEventListener("pointerup", (e) => {
+      if (e.pointerId !== joyPointerId) return;
+      e.preventDefault();
+      resetJoystick();
+    });
+
+    joyBase.addEventListener("pointercancel", (e) => {
+      if (e.pointerId !== joyPointerId) return;
+      e.preventDefault();
+      resetJoystick();
+    });
+  }
+
+  function bindHoldButton(btn, onDown, onUp) {
+    if (!btn) return;
+    btn.addEventListener("pointerdown", (e) => { e.preventDefault(); onDown(); btn.setPointerCapture(e.pointerId); });
+    btn.addEventListener("pointerup",   (e) => { e.preventDefault(); onUp(); });
+    btn.addEventListener("pointercancel",(e)=> { e.preventDefault(); onUp(); });
+    btn.addEventListener("pointerleave",(e)=> { /* don't force up; pointer capture handles */ });
+  }
+
+  bindHoldButton(btnShoot,
+    () => { virtual.shootHeld = true; },
+    () => { virtual.shootHeld = false; }
+  );
+
+  if (btnDash) btnDash.addEventListener("click", (e) => { e.preventDefault(); tryDash(); });
+  if (btnPause) btnPause.addEventListener("click", (e) => { e.preventDefault(); togglePause(); });
+
+  function togglePause() {
+    if (game.state === "playing") game.state = "paused";
+    else if (game.state === "paused") game.state = "playing";
+  }
 
   // ---------- Game data ----------
   const game = {
@@ -578,16 +579,10 @@ canvas.addEventListener("touchend", (e) => {
       const raw = localStorage.getItem(PROGRESS_KEY);
       if (!raw) return;
       const obj = JSON.parse(raw);
-      if (obj && typeof obj.unlocked === "number") {
-        progress.unlocked = clamp(obj.unlocked, 1, 4);
-      }
+      if (obj && typeof obj.unlocked === "number") progress.unlocked = clamp(obj.unlocked, 1, 4);
     } catch (_) {}
   }
-
-  function saveProgress() {
-    try { localStorage.setItem(PROGRESS_KEY, JSON.stringify(progress)); } catch (_) {}
-  }
-
+  function saveProgress() { try { localStorage.setItem(PROGRESS_KEY, JSON.stringify(progress)); } catch (_) {} }
   loadProgress();
 
   const player = {
@@ -749,30 +744,21 @@ canvas.addEventListener("touchend", (e) => {
     if (player.health <= 0) killPlayer();
   }
 
-  // ---------- Particles / FX ----------
+  // ---------- Particles ----------
   function spawnParticles(x, y, color, count = 12) {
     for (let i = 0; i < count; i++) {
       const angle = Math.random() * TAU;
       const speed = randRange(50, 220);
-      particles.push({
-        x, y,
-        vx: Math.cos(angle) * speed,
-        vy: Math.sin(angle) * speed,
-        life: randRange(0.3, 0.7),
-        radius: randRange(1.5, 3.5),
-        color
-      });
+      particles.push({ x, y, vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed, life: randRange(0.3, 0.7), radius: randRange(1.5, 3.5), color });
     }
   }
 
   function updateParticles(dt) {
     for (let i = particles.length - 1; i >= 0; i--) {
       const p = particles[i];
-      p.x += p.vx * dt;
-      p.y += p.vy * dt;
+      p.x += p.vx * dt; p.y += p.vy * dt;
       p.life -= dt;
-      p.vx *= 0.96;
-      p.vy *= 0.96;
+      p.vx *= 0.96; p.vy *= 0.96;
       if (p.life <= 0) particles.splice(i, 1);
     }
   }
@@ -781,28 +767,14 @@ canvas.addEventListener("touchend", (e) => {
   function maybeSpawnPowerUp(x, y) {
     if (Math.random() < 0.18) {
       const t = powerUpTypes[Math.floor(Math.random() * powerUpTypes.length)];
-      powerUps.push({
-        x, y,
-        radius: 10,
-        type: t.type,
-        color: t.color,
-        label: t.label,
-        duration: t.duration,
-        life: 12
-      });
+      powerUps.push({ x, y, radius: 10, type: t.type, color: t.color, label: t.label, duration: t.duration, life: 12 });
     }
   }
 
   function applyPowerUp(p) {
-    if (p.type === "health") {
-      player.health = clamp(player.health + 35, 0, player.maxHealth);
-    } else if (p.type === "speed") {
-      player.speed = player.baseSpeed * 1.7;
-      player.speedBoostTimer = p.duration;
-    } else if (p.type === "rapid") {
-      player.fireRate = player.fireRateBase * 0.4;
-      player.rapidFireTimer = p.duration;
-    }
+    if (p.type === "health") player.health = clamp(player.health + 35, 0, player.maxHealth);
+    else if (p.type === "speed") { player.speed = player.baseSpeed * 1.7; player.speedBoostTimer = p.duration; }
+    else if (p.type === "rapid") { player.fireRate = player.fireRateBase * 0.4; player.rapidFireTimer = p.duration; }
   }
 
   function updatePowerUps(dt) {
@@ -836,12 +808,9 @@ canvas.addEventListener("touchend", (e) => {
   function updatePlayerBullets(dt) {
     for (let i = bullets.length - 1; i >= 0; i--) {
       const b = bullets[i];
-      b.x += b.vx * dt;
-      b.y += b.vy * dt;
+      b.x += b.vx * dt; b.y += b.vy * dt;
       b.life -= dt;
-      if (b.life <= 0 || b.x < -30 || b.x > WIDTH + 30 || b.y < -30 || b.y > HEIGHT + 30) {
-        bullets.splice(i, 1);
-      }
+      if (b.life <= 0 || b.x < -30 || b.x > WIDTH + 30 || b.y < -30 || b.y > HEIGHT + 30) bullets.splice(i, 1);
     }
   }
 
@@ -852,13 +821,11 @@ canvas.addEventListener("touchend", (e) => {
   function updateEnemyBullets(dt, doCollisions) {
     for (let i = enemyBullets.length - 1; i >= 0; i--) {
       const b = enemyBullets[i];
-      b.x += b.vx * dt;
-      b.y += b.vy * dt;
+      b.x += b.vx * dt; b.y += b.vy * dt;
       b.life -= dt;
-      if (b.life <= 0 || b.x < -40 || b.x > WIDTH + 40 || b.y < -40 || b.y > HEIGHT + 40) {
-        enemyBullets.splice(i, 1);
-        continue;
-      }
+
+      if (b.life <= 0 || b.x < -40 || b.x > WIDTH + 40 || b.y < -40 || b.y > HEIGHT + 40) { enemyBullets.splice(i, 1); continue; }
+
       if (doCollisions && player.alive && game.state === "playing") {
         if (dist(b, player) < b.radius + player.radius) {
           applyDamage(b.damage * 0.6);
@@ -961,11 +928,9 @@ canvas.addEventListener("touchend", (e) => {
       } else if (h.type === "laser") {
         ctx.save();
         const active = h.active;
-        const baseColor = active ? "#f97373" : "#4b5563";
         ctx.fillStyle = active ? "rgba(248,113,113,0.55)" : "rgba(55,65,81,0.45)";
-        ctx.strokeStyle = baseColor;
+        ctx.strokeStyle = active ? "#f97373" : "#4b5563";
         ctx.lineWidth = 2;
-
         if (h.orientation === "horizontal") {
           ctx.fillRect(h.x, h.y - h.thickness / 2, h.length, h.thickness);
           ctx.strokeRect(h.x, h.y - h.thickness / 2, h.length, h.thickness);
@@ -978,9 +943,7 @@ canvas.addEventListener("touchend", (e) => {
         ctx.save();
         ctx.globalAlpha = 0.15;
         ctx.strokeStyle = "#0ea5e9";
-        ctx.beginPath();
-        ctx.arc(h.cx, h.cy, h.orbitRadius, 0, TAU);
-        ctx.stroke();
+        ctx.beginPath(); ctx.arc(h.cx, h.cy, h.orbitRadius, 0, TAU); ctx.stroke();
         ctx.globalAlpha = 1;
 
         const r = h.bladeRadius || 16;
@@ -988,14 +951,10 @@ canvas.addEventListener("touchend", (e) => {
         grad.addColorStop(0, "rgba(248,113,113,0.8)");
         grad.addColorStop(1, "rgba(248,113,113,0)");
         ctx.fillStyle = grad;
-        ctx.beginPath();
-        ctx.arc(h.x, h.y, r * 1.6, 0, TAU);
-        ctx.fill();
+        ctx.beginPath(); ctx.arc(h.x, h.y, r * 1.6, 0, TAU); ctx.fill();
 
         ctx.fillStyle = "#f97373";
-        ctx.beginPath();
-        ctx.arc(h.x, h.y, r, 0, TAU);
-        ctx.fill();
+        ctx.beginPath(); ctx.arc(h.x, h.y, r, 0, TAU); ctx.fill();
         ctx.restore();
       }
     }
@@ -1137,7 +1096,6 @@ canvas.addEventListener("touchend", (e) => {
   function onBossDefeated() {
     game.highScore = Math.max(game.highScore, game.score);
     game.state = "levelcomplete";
-
     const nextIndex = game.currentLevelIndex + 1;
     if (nextIndex < game.levels.length && progress.unlocked < nextIndex + 1) {
       progress.unlocked = nextIndex + 1;
@@ -1166,11 +1124,9 @@ canvas.addEventListener("touchend", (e) => {
     if (keys["a"] || keys["arrowleft"]) dx -= 1;
     if (keys["d"] || keys["arrowright"]) dx += 1;
 
-    // joystick fallback if no keyboard input
-    if (dx === 0 && dy === 0 && (Math.abs(mobile.moveX) > 0.02 || Math.abs(mobile.moveY) > 0.02)) {
-      dx = mobile.moveX;
-      dy = mobile.moveY;
-    }
+    // joystick (mobile)
+    dx += virtual.joyX;
+    dy += virtual.joyY;
 
     if (dx === 0 && dy === 0) {
       dx = Math.cos(player.angle);
@@ -1199,35 +1155,27 @@ canvas.addEventListener("touchend", (e) => {
       player.rapidFireTimer -= dt;
       if (player.rapidFireTimer <= 0) { player.rapidFireTimer = 0; player.fireRate = player.fireRateBase; }
     }
-    if (player.dashCooldown > 0) { player.dashCooldown = Math.max(0, player.dashCooldown - dt); }
-    if (player.invulnerableTimer > 0) { player.invulnerableTimer = Math.max(0, player.invulnerableTimer - dt); }
+    if (player.dashCooldown > 0) player.dashCooldown = Math.max(0, player.dashCooldown - dt);
+    if (player.invulnerableTimer > 0) player.invulnerableTimer = Math.max(0, player.invulnerableTimer - dt);
 
-    // aim (mouse/touch)
+    // aim
     player.angle = Math.atan2(mouse.y - player.y, mouse.x - player.x);
 
     player.prevX = player.x;
     player.prevY = player.y;
 
+    // movement (keyboard + joystick)
     let mvx = 0, mvy = 0;
-
-    // keyboard
     if (keys["w"] || keys["arrowup"]) mvy -= 1;
     if (keys["s"] || keys["arrowdown"]) mvy += 1;
     if (keys["a"] || keys["arrowleft"]) mvx -= 1;
     if (keys["d"] || keys["arrowright"]) mvx += 1;
 
-    // joystick
-    mvx += mobile.moveX;
-    mvy += mobile.moveY;
+    mvx += virtual.joyX;
+    mvy += virtual.joyY;
 
-    const len = Math.hypot(mvx, mvy);
-    if (len > 0.0001) { mvx /= len; mvy /= len; }
-
-    // dash button (one tap)
-    if (mobile.dashTap) {
-      mobile.dashTap = false;
-      tryDash();
-    }
+    const len = Math.hypot(mvx, mvy) || 1;
+    mvx /= len; mvy /= len;
 
     if (player.dashTimer > 0) {
       player.dashTimer -= dt;
@@ -1244,11 +1192,11 @@ canvas.addEventListener("touchend", (e) => {
 
     resolvePlayerWalls();
 
-    // shooting: desktop mouse OR mobile shoot button
-    const wantsShoot = (mouse.down || mobile.shootDown);
+    // shooting: desktop uses mouse.down, mobile uses button hold
+    const shooting = mouse.down || virtual.shootHeld;
 
     player.fireCooldown -= dt;
-    if (wantsShoot && player.fireCooldown <= 0) {
+    if (shooting && player.fireCooldown <= 0) {
       shootPlayerBullet();
       player.fireCooldown = player.fireRate;
     }
@@ -1343,7 +1291,7 @@ canvas.addEventListener("touchend", (e) => {
 
     ctx.font = "14px system-ui";
     ctx.fillStyle = "#9ca3af";
-    ctx.fillText("Click a level card to start. Levels unlock as you beat bosses.", WIDTH / 2, 60);
+    ctx.fillText("Tap a level card to start. Levels unlock as you beat bosses.", WIDTH / 2, 60);
 
     const levels = game.levels;
     const cardW = 280, cardH = 100, gap = 24, cols = 2;
@@ -1552,7 +1500,7 @@ canvas.addEventListener("touchend", (e) => {
     ctx.fillStyle = "#9ca3af";
     ctx.font = "10px system-ui";
     ctx.textAlign = "left";
-    ctx.fillText(isMobile ? "Dash (button)" : "Dash (Space / Shift)", dashX, dashY + dashH + 10);
+    ctx.fillText(IS_MOBILE ? "Dash (DASH button)" : "Dash (Space / Shift)", dashX, dashY + dashH + 10);
 
     let py = 70;
     ctx.textAlign = "left";
@@ -1573,8 +1521,7 @@ canvas.addEventListener("touchend", (e) => {
     ctx.lineWidth = 2;
     ctx.beginPath();
     ctx.roundRect(x, y, w, h, 10);
-    ctx.fill();
-    ctx.stroke();
+    ctx.fill(); ctx.stroke();
 
     ctx.fillStyle = "#e5e7eb";
     ctx.font = "14px system-ui";
@@ -1594,8 +1541,7 @@ canvas.addEventListener("touchend", (e) => {
     ctx.lineWidth = 2;
     ctx.beginPath();
     ctx.roundRect(x, y, w, h, 10);
-    ctx.fill();
-    ctx.stroke();
+    ctx.fill(); ctx.stroke();
 
     ctx.fillStyle = "#e5e7eb";
     ctx.font = "14px system-ui";
@@ -1619,14 +1565,8 @@ canvas.addEventListener("touchend", (e) => {
       ctx.font = "30px system-ui";
       ctx.fillText("NEON ARENA – CAMPAIGN", WIDTH / 2, HEIGHT / 2 - 60);
       ctx.font = "15px system-ui";
-      ctx.fillText("Top-down survival shooter with levels, bosses, hazards and dash.", WIDTH / 2, HEIGHT / 2 - 20);
-      ctx.fillText("Press ENTER or CLICK to open the campaign map", WIDTH / 2, HEIGHT / 2 + 20);
-      ctx.fillText(
-        isMobile
-          ? "Move: Joystick · Shoot: Button · Dash: Button · Pause: Button"
-          : "Move: WASD / Arrows · Shoot: Mouse · Dash: Space / Shift · Pause: P",
-        WIDTH / 2, HEIGHT / 2 + 50
-      );
+      ctx.fillText("Tap / click to open the campaign map", WIDTH / 2, HEIGHT / 2 + 10);
+      ctx.fillText(IS_MOBILE ? "Move: Joystick · Aim: drag on game · Shoot: SHOOT · Dash: DASH · Pause: ⏸" : "Move: WASD · Aim: Mouse · Shoot: Click · Dash: Space · Pause: P", WIDTH / 2, HEIGHT / 2 + 40);
     }
 
     if (game.state === "paused") {
@@ -1636,7 +1576,7 @@ canvas.addEventListener("touchend", (e) => {
       ctx.font = "26px system-ui";
       ctx.fillText("PAUSED", WIDTH / 2, HEIGHT / 2 - 8);
       ctx.font = "14px system-ui";
-      ctx.fillText(isMobile ? "Tap ⏸ to resume" : "Press P to resume", WIDTH / 2, HEIGHT / 2 + 20);
+      ctx.fillText(IS_MOBILE ? "Tap ⏸ to resume" : "Press P to resume", WIDTH / 2, HEIGHT / 2 + 20);
     }
 
     if (game.state === "gameover") {
@@ -1649,8 +1589,8 @@ canvas.addEventListener("touchend", (e) => {
       ctx.font = "16px system-ui";
       ctx.fillText(`Score: ${game.score}`, WIDTH / 2, HEIGHT / 2 - 24);
       ctx.fillText(`Best: ${game.highScore}`, WIDTH / 2, HEIGHT / 2 + 0);
-      ctx.fillText("Press ENTER to retry this level", WIDTH / 2, HEIGHT / 2 + 36);
-      ctx.fillText("Press M for campaign map", WIDTH / 2, HEIGHT / 2 + 60);
+      ctx.fillText(IS_MOBILE ? "Tap to open map, then pick level" : "Press ENTER to retry this level", WIDTH / 2, HEIGHT / 2 + 36);
+      ctx.fillText(IS_MOBILE ? "Or press Main Menu button" : "Press M for campaign map", WIDTH / 2, HEIGHT / 2 + 60);
     }
 
     if (game.state === "levelcomplete") {
@@ -1666,14 +1606,14 @@ canvas.addEventListener("touchend", (e) => {
 
       const nextIndex = game.currentLevelIndex + 1;
       const hasNext = nextIndex < game.levels.length;
-      ctx.fillText(hasNext ? "Press ENTER for next level" : "All levels complete!", WIDTH / 2, HEIGHT / 2 + 36);
-      ctx.fillText("Press M for campaign map", WIDTH / 2, HEIGHT / 2 + 60);
+      ctx.fillText(hasNext ? (IS_MOBILE ? "Tap map to choose next" : "Press ENTER for next level") : "All levels complete!", WIDTH / 2, HEIGHT / 2 + 36);
+      ctx.fillText(IS_MOBILE ? "Tap to open map" : "Press M for campaign map", WIDTH / 2, HEIGHT / 2 + 60);
     }
 
     if (game.state === "playing" && game.showHelp) {
       ctx.globalAlpha = 0.8;
       ctx.fillStyle = "#020617";
-      const w = 330, h = 112, x = WIDTH - w - 15, y = HEIGHT - h - 15;
+      const w = 310, h = 104, x = WIDTH - w - 15, y = HEIGHT - h - 15;
       ctx.fillRect(x, y, w, h);
       ctx.strokeStyle = "#1f2937";
       ctx.strokeRect(x, y, w, h);
@@ -1682,23 +1622,22 @@ canvas.addEventListener("touchend", (e) => {
       ctx.fillStyle = "#e5e7eb";
       ctx.font = "11px system-ui";
       ctx.textAlign = "left";
-      const lines = isMobile
-        ? [
-            "Mobile Controls:",
-            "Move: Joystick (bottom-left)",
-            "Aim: Touch canvas",
-            "Shoot: SHOOT button (hold)",
-            "Dash: DASH button",
-            "Pause: ⏸ button"
-          ]
-        : [
-            "Controls:",
-            "Move: WASD / Arrow Keys",
-            "Aim: Mouse · Shoot: Left Click",
-            "Dash: Space / Shift",
-            "Avoid lasers, rotating blades and walls!",
-            "Pause: P · Toggle this help: H"
-          ];
+      const lines = IS_MOBILE ? [
+        "Mobile Controls:",
+        "Move: Joystick (left)",
+        "Aim: drag on game screen",
+        "Shoot: hold SHOOT button",
+        "Dash: DASH button • Pause: ⏸",
+        "Toggle this help: H"
+      ] : [
+        "Controls:",
+        "Move: WASD / Arrow Keys",
+        "Aim: Mouse · Shoot: Left Click",
+        "Dash: Space / Shift",
+        "Avoid lasers, rotating blades and walls!",
+        "Pause: P · Toggle this help: H"
+      ];
+
       let ty = y + 16;
       for (const line of lines) { ctx.fillText(line, x + 10, ty); ty += 14; }
     }
@@ -1731,7 +1670,7 @@ canvas.addEventListener("touchend", (e) => {
     requestAnimationFrame(loop);
   }
 
-  // Start at menu
+  // start
   goToMenu();
   requestAnimationFrame(loop);
 })();
@@ -1739,4 +1678,3 @@ canvas.addEventListener("touchend", (e) => {
 
 </body>
 </html>
-
