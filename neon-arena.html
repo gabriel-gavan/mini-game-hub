@@ -453,68 +453,104 @@
   window.addEventListener("mouseup", () => { mouse.down = false; });
 
   // ✅ Mobile: touch aiming on canvas only (NOT on buttons)
-  canvas.addEventListener("touchstart", (e) => {
-    // if a button is touched, ignore (buttons handle themselves)
-    const target = e.target;
-    if (target && target.closest && target.closest(".mobile-controls")) return;
+  function handleCanvasTap(clientX, clientY) {
+  const rect = canvas.getBoundingClientRect();
+  const scaleX = canvas.width / rect.width;
+  const scaleY = canvas.height / rect.height;
+  const mx = (clientX - rect.left) * scaleX;
+  const my = (clientY - rect.top) * scaleY;
 
-    e.preventDefault();
-    const t = e.touches[0];
-    if (!t) return;
-    setMouseFromClient(t.clientX, t.clientY);
-  }, { passive: false });
+  // top-right canvas buttons
+  if (menuButton &&
+      mx >= menuButton.x && mx <= menuButton.x + menuButton.w &&
+      my >= menuButton.y && my <= menuButton.y + menuButton.h) {
+    goToMenu();
+    return true;
+  }
 
-  canvas.addEventListener("touchmove", (e) => {
-    const target = e.target;
-    if (target && target.closest && target.closest(".mobile-controls")) return;
+  if (homeButton &&
+      mx >= homeButton.x && mx <= homeButton.x + homeButton.w &&
+      my >= homeButton.y && my <= homeButton.y + homeButton.h) {
+    window.location.href = "index.html";
+    return true;
+  }
 
-    e.preventDefault();
-    const t = e.touches[0];
-    if (!t) return;
-    setMouseFromClient(t.clientX, t.clientY);
-  }, { passive: false });
+  // menu -> map
+  if (game.state === "menu") {
+    goToMap();
+    return true;
+  }
 
-  canvas.addEventListener("click", (e) => {
-    const rect = canvas.getBoundingClientRect();
-    const scaleX = canvas.width / rect.width;
-    const scaleY = canvas.height / rect.height;
-    const mx = (e.clientX - rect.left) * scaleX;
-    const my = (e.clientY - rect.top) * scaleY;
-
-    if (menuButton &&
-        mx >= menuButton.x &&
-        mx <= menuButton.x + menuButton.w &&
-        my >= menuButton.y &&
-        my <= menuButton.y + menuButton.h) {
-      goToMenu();
-      return;
-    }
-
-    if (homeButton &&
-        mx >= homeButton.x &&
-        mx <= homeButton.x + homeButton.w &&
-        my >= homeButton.y &&
-        my <= homeButton.y + homeButton.h) {
-      window.location.href = "index.html";
-      return;
-    }
-
-    if (game.state === "menu") {
-      goToMap();
-      return;
-    }
-
-    if (game.state === "map") {
-      for (let i = 0; i < game.mapRects.length; i++) {
-        const r = game.mapRects[i];
-        if (!r) continue;
-        if (mx >= r.x && mx <= r.x + r.w && my >= r.y && my <= r.y + r.h) {
-          if (i < progress.unlocked) startLevel(i);
-          break;
-        }
+  // map -> start level
+  if (game.state === "map") {
+    for (let i = 0; i < game.mapRects.length; i++) {
+      const r = game.mapRects[i];
+      if (!r) continue;
+      if (mx >= r.x && mx <= r.x + r.w && my >= r.y && my <= r.y + r.h) {
+        if (i < progress.unlocked) startLevel(i);
+        break;
       }
-      return;
     }
+    return true;
+  }
+
+  return false;
+}
+
+// Desktop click
+canvas.addEventListener("click", (e) => {
+  handleCanvasTap(e.clientX, e.clientY);
+});
+
+// ✅ Mobile tap support (touchend) – triggers menu/map taps reliably
+let touchStartX = 0, touchStartY = 0, touchMoved = false;
+
+canvas.addEventListener("touchstart", (e) => {
+  const target = e.target;
+  if (target && target.closest && target.closest(".mobile-controls")) return;
+
+  e.preventDefault();
+  const t = e.touches[0];
+  if (!t) return;
+
+  touchStartX = t.clientX;
+  touchStartY = t.clientY;
+  touchMoved = false;
+
+  setMouseFromClient(t.clientX, t.clientY);
+}, { passive: false });
+
+canvas.addEventListener("touchmove", (e) => {
+  const target = e.target;
+  if (target && target.closest && target.closest(".mobile-controls")) return;
+
+  e.preventDefault();
+  const t = e.touches[0];
+  if (!t) return;
+
+  // mark as moved if finger dragged (so we don’t “tap” when aiming)
+  if (Math.hypot(t.clientX - touchStartX, t.clientY - touchStartY) > 8) {
+    touchMoved = true;
+  }
+
+  setMouseFromClient(t.clientX, t.clientY);
+}, { passive: false });
+
+canvas.addEventListener("touchend", (e) => {
+  const target = e.target;
+  if (target && target.closest && target.closest(".mobile-controls")) return;
+
+  e.preventDefault();
+
+  // only treat as a tap if finger didn’t move much
+  if (touchMoved) return;
+
+  const t = e.changedTouches && e.changedTouches[0];
+  if (!t) return;
+
+  handleCanvasTap(t.clientX, t.clientY);
+}, { passive: false });
+
   });
 
   // ---------- Game data ----------
@@ -1703,3 +1739,4 @@
 
 </body>
 </html>
+
