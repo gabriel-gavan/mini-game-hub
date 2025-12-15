@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <title>Neon Arena – Campaign</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
 
   <!-- ✅ AUTO ADS: keep ONLY this one AdSense loader (same as index.html) -->
   <script async
@@ -24,6 +24,7 @@
       display: flex;
       justify-content: center;
       align-items: stretch;
+      overflow: hidden;
     }
 
     /* --------- LAYOUT: side spacing + main game --------- */
@@ -33,6 +34,7 @@
       max-width: 1440px;
       padding: 12px;
       gap: 12px;
+      height: 100vh;
     }
 
     .side-banner {
@@ -59,7 +61,7 @@
       display: flex;
       flex-direction: column;
       overflow: hidden;
-      /* NOTE: removed hard max-height so mobile scrolling behaves naturally */
+      min-height: 0; /* needed for flex children scrolling */
     }
 
     /* Top strip (Auto Ads can still place ads on the page) */
@@ -69,6 +71,7 @@
       background: #020617;
       display: flex;
       justify-content: center;
+      flex: 0 0 auto;
     }
     .top-banner-inner {
       width: 100%;
@@ -90,6 +93,7 @@
       font-size: 0.9rem;
       gap: 0.8rem;
       flex-wrap: wrap;
+      flex: 0 0 auto;
     }
     .game-header .title {
       font-weight: 700;
@@ -104,9 +108,7 @@
       border: 1px solid #374151;
       background: rgba(2,6,23,0.35);
     }
-    .game-header a:hover {
-      border-color: #6366f1;
-    }
+    .game-header a:hover { border-color: #6366f1; }
 
     /* Game body */
     .game-body {
@@ -115,7 +117,9 @@
       justify-content: center;
       align-items: center;
       padding: 0.75rem 1.2rem 1rem;
-      overflow: auto;
+      overflow: hidden;
+      position: relative; /* for overlay controls */
+      min-height: 0;
     }
 
     canvas {
@@ -129,16 +133,87 @@
       box-shadow: 0 20px 50px rgba(0,0,0,0.8);
       cursor: crosshair;
       touch-action: none;        /* ✅ important for touch aiming */
+      display: block;
     }
 
     /* ✅ Mobile adjustments */
     @media (max-width: 700px) {
+      body { overflow: hidden; }
       .page-wrap { padding: 8px; gap: 8px; }
       .top-banner { padding: 0.35rem 0.6rem 0.25rem; }
       .game-header { padding: 0.5rem 0.7rem; font-size: 0.85rem; }
       .game-header a { font-size: 0.8rem; padding: 0.3rem 0.65rem; }
       .game-body { padding: 0.55rem 0.7rem 0.85rem; }
       canvas { max-width: 100%; }
+    }
+
+    /* =======================
+       MOBILE CONTROLS OVERLAY
+       ======================= */
+    .mobile-controls {
+      position: absolute;
+      inset: 0;
+      pointer-events: none; /* container doesn't block canvas */
+    }
+
+    .joy {
+      position: absolute;
+      left: 14px;
+      bottom: 14px;
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      background: rgba(2,6,23,0.40);
+      border: 1px solid rgba(148,163,184,0.25);
+      box-shadow: 0 12px 28px rgba(0,0,0,0.55);
+      pointer-events: auto;
+      touch-action: none;
+      backdrop-filter: blur(4px);
+    }
+
+    .joy-thumb {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 46px;
+      height: 46px;
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(56,189,248,0.85);
+      border: 1px solid rgba(224,242,254,0.35);
+      box-shadow: 0 10px 20px rgba(56,189,248,0.25);
+    }
+
+    .mc-btn {
+      position: absolute;
+      pointer-events: auto;
+      touch-action: none;
+      user-select: none;
+      -webkit-user-select: none;
+      width: 64px;
+      height: 64px;
+      border-radius: 18px;
+      background: rgba(2,6,23,0.55);
+      border: 1px solid rgba(148,163,184,0.28);
+      box-shadow: 0 12px 28px rgba(0,0,0,0.55);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 0.72rem;
+      letter-spacing: 0.04em;
+      color: #e5e7eb;
+      backdrop-filter: blur(4px);
+    }
+
+    .mc-btn:active { transform: scale(0.98); }
+
+    .btn-shoot { right: 16px; bottom: 16px; width: 74px; height: 74px; border-radius: 22px; }
+    .btn-dash  { right: 22px; bottom: 102px; width: 62px; height: 62px; }
+    .btn-pause { right: 12px; top: 12px; width: 48px; height: 48px; border-radius: 16px; font-size: 0.9rem; }
+
+    @media (min-width: 1025px) {
+      .mobile-controls { display: none; }
     }
   </style>
 </head>
@@ -169,6 +244,17 @@
     <div class="game-body">
       <!-- Keep internal resolution stable for gameplay logic -->
       <canvas id="gameCanvas" width="960" height="540"></canvas>
+
+      <!-- ✅ MOBILE CONTROLS -->
+      <div class="mobile-controls" aria-hidden="true">
+        <div id="joy" class="joy">
+          <div id="joyThumb" class="joy-thumb"></div>
+        </div>
+
+        <div id="btnShoot" class="mc-btn btn-shoot">SHOOT</div>
+        <div id="btnDash"  class="mc-btn btn-dash">DASH</div>
+        <div id="btnPause" class="mc-btn btn-pause">⏸</div>
+      </div>
     </div>
 
   </main>
@@ -190,6 +276,101 @@
 
   const TAU = Math.PI * 2;
   const PROGRESS_KEY = "neon_arena_campaign_progress_v1";
+
+  // =========================
+  // ✅ MOBILE CONTROL STATE
+  // =========================
+  const isMobile = window.matchMedia && window.matchMedia("(max-width: 1024px)").matches;
+  const mobile = {
+    moveX: 0,
+    moveY: 0,
+    shootDown: false,
+    dashTap: false
+  };
+
+  const joy = document.getElementById("joy");
+  const joyThumb = document.getElementById("joyThumb");
+  const btnShoot = document.getElementById("btnShoot");
+  const btnDash  = document.getElementById("btnDash");
+  const btnPause = document.getElementById("btnPause");
+
+  function setThumb(dx, dy) {
+    // dx/dy are pixels from center
+    joyThumb.style.transform = `translate(${dx}px, ${dy}px) translate(-50%, -50%)`;
+  }
+
+  function clamp01(v) { return Math.max(-1, Math.min(1, v)); }
+
+  if (joy) {
+    let active = false;
+    let centerX = 0, centerY = 0;
+    const maxR = 46;
+
+    function start(e) {
+      active = true;
+      const rect = joy.getBoundingClientRect();
+      centerX = rect.left + rect.width / 2;
+      centerY = rect.top + rect.height / 2;
+      move(e);
+    }
+
+    function move(e) {
+      if (!active) return;
+      const t = e.touches ? e.touches[0] : e;
+      if (!t) return;
+      const dx = t.clientX - centerX;
+      const dy = t.clientY - centerY;
+      const d = Math.hypot(dx, dy) || 1;
+      const r = Math.min(d, maxR);
+      const nx = (dx / d) * r;
+      const ny = (dy / d) * r;
+
+      // normalized -1..1
+      mobile.moveX = clamp01(nx / maxR);
+      mobile.moveY = clamp01(ny / maxR);
+
+      setThumb(nx, ny);
+    }
+
+    function end() {
+      active = false;
+      mobile.moveX = 0;
+      mobile.moveY = 0;
+      setThumb(0, 0);
+    }
+
+    joy.addEventListener("touchstart", (e) => { e.preventDefault(); start(e); }, { passive: false });
+    joy.addEventListener("touchmove",  (e) => { e.preventDefault(); move(e); },  { passive: false });
+    joy.addEventListener("touchend",   (e) => { e.preventDefault(); end(); },   { passive: false });
+    joy.addEventListener("touchcancel",(e) => { e.preventDefault(); end(); },   { passive: false });
+  }
+
+  function bindHold(btn, onDown, onUp) {
+    if (!btn) return;
+    btn.addEventListener("touchstart", (e) => { e.preventDefault(); onDown(); }, { passive: false });
+    btn.addEventListener("touchend",   (e) => { e.preventDefault(); onUp();   }, { passive: false });
+    btn.addEventListener("touchcancel",(e) => { e.preventDefault(); onUp();   }, { passive: false });
+  }
+
+  bindHold(btnShoot,
+    () => { mobile.shootDown = true; },
+    () => { mobile.shootDown = false; }
+  );
+
+  if (btnDash) {
+    btnDash.addEventListener("touchstart", (e) => {
+      e.preventDefault();
+      mobile.dashTap = true; // consumed in update()
+    }, { passive: false });
+  }
+
+  if (btnPause) {
+    btnPause.addEventListener("touchstart", (e) => {
+      e.preventDefault();
+      if (game.state === "playing") game.state = "paused";
+      else if (game.state === "paused") game.state = "playing";
+    }, { passive: false });
+  }
 
   // ---------- Utils ----------
   function clamp(v, min, max) {
@@ -271,25 +452,26 @@
   canvas.addEventListener("mousedown", () => { mouse.down = true; });
   window.addEventListener("mouseup", () => { mouse.down = false; });
 
-  // ✅ Mobile: touch aiming + hold to shoot
+  // ✅ Mobile: touch aiming on canvas only (NOT on buttons)
   canvas.addEventListener("touchstart", (e) => {
+    // if a button is touched, ignore (buttons handle themselves)
+    const target = e.target;
+    if (target && target.closest && target.closest(".mobile-controls")) return;
+
     e.preventDefault();
     const t = e.touches[0];
     if (!t) return;
     setMouseFromClient(t.clientX, t.clientY);
-    mouse.down = true;
   }, { passive: false });
 
   canvas.addEventListener("touchmove", (e) => {
+    const target = e.target;
+    if (target && target.closest && target.closest(".mobile-controls")) return;
+
     e.preventDefault();
     const t = e.touches[0];
     if (!t) return;
     setMouseFromClient(t.clientX, t.clientY);
-  }, { passive: false });
-
-  canvas.addEventListener("touchend", (e) => {
-    e.preventDefault();
-    mouse.down = false;
   }, { passive: false });
 
   canvas.addEventListener("click", (e) => {
@@ -941,15 +1123,24 @@
     if (player.dashCooldown > 0 || player.dashTimer > 0) return;
 
     let dx = 0, dy = 0;
+
+    // keyboard
     if (keys["w"] || keys["arrowup"]) dy -= 1;
     if (keys["s"] || keys["arrowdown"]) dy += 1;
     if (keys["a"] || keys["arrowleft"]) dx -= 1;
     if (keys["d"] || keys["arrowright"]) dx += 1;
 
+    // joystick fallback if no keyboard input
+    if (dx === 0 && dy === 0 && (Math.abs(mobile.moveX) > 0.02 || Math.abs(mobile.moveY) > 0.02)) {
+      dx = mobile.moveX;
+      dy = mobile.moveY;
+    }
+
     if (dx === 0 && dy === 0) {
       dx = Math.cos(player.angle);
       dy = Math.sin(player.angle);
     }
+
     const len = Math.hypot(dx, dy) || 1;
     dx /= len; dy /= len;
 
@@ -975,19 +1166,32 @@
     if (player.dashCooldown > 0) { player.dashCooldown = Math.max(0, player.dashCooldown - dt); }
     if (player.invulnerableTimer > 0) { player.invulnerableTimer = Math.max(0, player.invulnerableTimer - dt); }
 
+    // aim (mouse/touch)
     player.angle = Math.atan2(mouse.y - player.y, mouse.x - player.x);
 
     player.prevX = player.x;
     player.prevY = player.y;
 
     let mvx = 0, mvy = 0;
+
+    // keyboard
     if (keys["w"] || keys["arrowup"]) mvy -= 1;
     if (keys["s"] || keys["arrowdown"]) mvy += 1;
     if (keys["a"] || keys["arrowleft"]) mvx -= 1;
     if (keys["d"] || keys["arrowright"]) mvx += 1;
 
-    const len = Math.hypot(mvx, mvy) || 1;
-    mvx /= len; mvy /= len;
+    // joystick
+    mvx += mobile.moveX;
+    mvy += mobile.moveY;
+
+    const len = Math.hypot(mvx, mvy);
+    if (len > 0.0001) { mvx /= len; mvy /= len; }
+
+    // dash button (one tap)
+    if (mobile.dashTap) {
+      mobile.dashTap = false;
+      tryDash();
+    }
 
     if (player.dashTimer > 0) {
       player.dashTimer -= dt;
@@ -1004,8 +1208,11 @@
 
     resolvePlayerWalls();
 
+    // shooting: desktop mouse OR mobile shoot button
+    const wantsShoot = (mouse.down || mobile.shootDown);
+
     player.fireCooldown -= dt;
-    if (mouse.down && player.fireCooldown <= 0) {
+    if (wantsShoot && player.fireCooldown <= 0) {
       shootPlayerBullet();
       player.fireCooldown = player.fireRate;
     }
@@ -1309,7 +1516,7 @@
     ctx.fillStyle = "#9ca3af";
     ctx.font = "10px system-ui";
     ctx.textAlign = "left";
-    ctx.fillText("Dash (Space / Shift)", dashX, dashY + dashH + 10);
+    ctx.fillText(isMobile ? "Dash (button)" : "Dash (Space / Shift)", dashX, dashY + dashH + 10);
 
     let py = 70;
     ctx.textAlign = "left";
@@ -1378,7 +1585,12 @@
       ctx.font = "15px system-ui";
       ctx.fillText("Top-down survival shooter with levels, bosses, hazards and dash.", WIDTH / 2, HEIGHT / 2 - 20);
       ctx.fillText("Press ENTER or CLICK to open the campaign map", WIDTH / 2, HEIGHT / 2 + 20);
-      ctx.fillText("Move: WASD / Arrows · Shoot: Mouse/touch hold · Dash: Space / Shift · Pause: P", WIDTH / 2, HEIGHT / 2 + 50);
+      ctx.fillText(
+        isMobile
+          ? "Move: Joystick · Shoot: Button · Dash: Button · Pause: Button"
+          : "Move: WASD / Arrows · Shoot: Mouse · Dash: Space / Shift · Pause: P",
+        WIDTH / 2, HEIGHT / 2 + 50
+      );
     }
 
     if (game.state === "paused") {
@@ -1388,7 +1600,7 @@
       ctx.font = "26px system-ui";
       ctx.fillText("PAUSED", WIDTH / 2, HEIGHT / 2 - 8);
       ctx.font = "14px system-ui";
-      ctx.fillText("Press P to resume", WIDTH / 2, HEIGHT / 2 + 20);
+      ctx.fillText(isMobile ? "Tap ⏸ to resume" : "Press P to resume", WIDTH / 2, HEIGHT / 2 + 20);
     }
 
     if (game.state === "gameover") {
@@ -1425,7 +1637,7 @@
     if (game.state === "playing" && game.showHelp) {
       ctx.globalAlpha = 0.8;
       ctx.fillStyle = "#020617";
-      const w = 310, h = 104, x = WIDTH - w - 15, y = HEIGHT - h - 15;
+      const w = 330, h = 112, x = WIDTH - w - 15, y = HEIGHT - h - 15;
       ctx.fillRect(x, y, w, h);
       ctx.strokeStyle = "#1f2937";
       ctx.strokeRect(x, y, w, h);
@@ -1434,14 +1646,23 @@
       ctx.fillStyle = "#e5e7eb";
       ctx.font = "11px system-ui";
       ctx.textAlign = "left";
-      const lines = [
-        "Controls:",
-        "Move: WASD / Arrow Keys",
-        "Aim: Mouse/touch · Shoot: Hold",
-        "Dash: Space / Shift",
-        "Avoid lasers, rotating blades and walls!",
-        "Pause: P · Toggle this help: H"
-      ];
+      const lines = isMobile
+        ? [
+            "Mobile Controls:",
+            "Move: Joystick (bottom-left)",
+            "Aim: Touch canvas",
+            "Shoot: SHOOT button (hold)",
+            "Dash: DASH button",
+            "Pause: ⏸ button"
+          ]
+        : [
+            "Controls:",
+            "Move: WASD / Arrow Keys",
+            "Aim: Mouse · Shoot: Left Click",
+            "Dash: Space / Shift",
+            "Avoid lasers, rotating blades and walls!",
+            "Pause: P · Toggle this help: H"
+          ];
       let ty = y + 16;
       for (const line of lines) { ctx.fillText(line, x + 10, ty); ty += 14; }
     }
