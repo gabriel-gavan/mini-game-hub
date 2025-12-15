@@ -406,49 +406,54 @@
   }
 
   // Desktop click
-  canvas.addEventListener("click", (e) => handleCanvasTap(e.clientX, e.clientY));
+  // ✅ Unified pointer handling (mouse + touch). Reliable on mobile.
+let pDown = false;
+let pStartX = 0, pStartY = 0;
+let pMoved = false;
 
-  // Mobile: touch aiming on canvas + reliable tap-to-enter menu/map (tap = low movement)
-  let touchStartX = 0, touchStartY = 0, touchMoved = false;
-  canvas.addEventListener("touchstart", (e) => {
-    const target = e.target;
-    if (target && target.closest && target.closest(".mobile-controls")) return;
+canvas.addEventListener("pointerdown", (e) => {
+  // If somehow fired from overlay, ignore
+  const target = e.target;
+  if (target && target.closest && target.closest(".mobile-controls")) return;
 
-    e.preventDefault();
-    const t = e.touches[0];
-    if (!t) return;
+  pDown = true;
+  pMoved = false;
+  pStartX = e.clientX;
+  pStartY = e.clientY;
 
-    touchStartX = t.clientX;
-    touchStartY = t.clientY;
-    touchMoved = false;
+  canvas.setPointerCapture(e.pointerId);
+  setMouseFromClient(e.clientX, e.clientY);
 
-    setMouseFromClient(t.clientX, t.clientY);
-  }, { passive: false });
+  // prevent scroll/zoom gestures interfering
+  e.preventDefault();
+}, { passive: false });
 
-  canvas.addEventListener("touchmove", (e) => {
-    const target = e.target;
-    if (target && target.closest && target.closest(".mobile-controls")) return;
+canvas.addEventListener("pointermove", (e) => {
+  if (!pDown) return;
 
-    e.preventDefault();
-    const t = e.touches[0];
-    if (!t) return;
+  const target = e.target;
+  if (target && target.closest && target.closest(".mobile-controls")) return;
 
-    if (Math.hypot(t.clientX - touchStartX, t.clientY - touchStartY) > 8) touchMoved = true;
-    setMouseFromClient(t.clientX, t.clientY);
-  }, { passive: false });
+  if (Math.hypot(e.clientX - pStartX, e.clientY - pStartY) > 8) pMoved = true;
 
-  canvas.addEventListener("touchend", (e) => {
-    const target = e.target;
-    if (target && target.closest && target.closest(".mobile-controls")) return;
+  setMouseFromClient(e.clientX, e.clientY);
+  e.preventDefault();
+}, { passive: false });
 
-    e.preventDefault();
-    if (touchMoved) return;
+canvas.addEventListener("pointerup", (e) => {
+  const target = e.target;
+  if (target && target.closest && target.closest(".mobile-controls")) return;
 
-    const t = e.changedTouches && e.changedTouches[0];
-    if (!t) return;
+  // Treat as TAP only if finger/mouse didn't move much
+  if (!pMoved) handleCanvasTap(e.clientX, e.clientY);
 
-    handleCanvasTap(t.clientX, t.clientY);
-  }, { passive: false });
+  pDown = false;
+  e.preventDefault();
+}, { passive: false });
+
+canvas.addEventListener("pointercancel", () => {
+  pDown = false;
+});
 
   // ---------- Mobile controls ----------
   const mobileControls = document.getElementById("mobileControls");
@@ -1678,3 +1683,4 @@
 
 </body>
 </html>
+
