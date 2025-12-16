@@ -1,31 +1,301 @@
 <!DOCTYPE html>
-<html>
-<head><title>Typing Speed Test</title></head>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Typing Speed Test</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+
+  <!-- ✅ AUTO ADS: keep ONLY this one AdSense loader -->
+  <script async
+    src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5482914432517813"
+    crossorigin="anonymous"></script>
+
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background:
+        linear-gradient(135deg, rgba(0,0,0,0.8), rgba(15,23,42,0.9)),
+        url("images/hub-bg.jpg") center center / cover no-repeat fixed;
+      color: #e5e7eb;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      min-height: 100vh;
+    }
+
+    .layout {
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+      padding: 16px 8px;
+      gap: 12px;
+    }
+
+    .ad-vertical {
+      width: 160px;
+      min-height: 600px;
+      border-radius: 12px;
+      border: 1px dashed #1f2937;
+      background: radial-gradient(circle at top, #020617 0, #020617 55%, #000 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      text-align: center;
+      color: #6b7280;
+      padding: 8px;
+    }
+
+    .main-column {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      width: 100%;
+      max-width: 960px;
+    }
+
+    .top-banner {
+      width: 100%;
+      max-width: 960px;
+      height: 90px;
+      border-radius: 12px;
+      border: 1px dashed #1f2937;
+      background: radial-gradient(circle at top, #020617 0, #020617 55%, #000 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      color: #6b7280;
+      text-align: center;
+      padding: 4px;
+    }
+
+    .game-header {
+      width: 100%;
+      padding: 0.55rem 1rem;
+      border-radius: 12px;
+      border: 1px solid #111827;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: linear-gradient(135deg, #020617, #111827);
+      font-size: 0.9rem;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+    }
+
+    .game-header .title {
+      font-weight: 800;
+      letter-spacing: 0.03em;
+    }
+
+    .game-header a {
+      color: #e5e7eb;
+      text-decoration: none;
+      font-size: 0.85rem;
+      padding: 0.35rem 0.75rem;
+      border-radius: 999px;
+      border: 1px solid #374151;
+      background: rgba(2,6,23,0.35);
+    }
+
+    .frame {
+      width: 100%;
+      border-radius: 14px;
+      border: 1px solid #4b5563;
+      background: radial-gradient(circle at top, #020617 0, #020617 55%, #000 100%);
+      box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+      padding: 18px 14px 16px;
+      text-align: center;
+    }
+
+    .text-box {
+      background: rgba(2,6,23,0.55);
+      border: 1px solid rgba(148,163,184,0.25);
+      border-radius: 12px;
+      padding: 14px;
+      font-size: 16px;
+      line-height: 1.5;
+      margin-bottom: 14px;
+    }
+
+    .text-box span.done { color: #22c55e; }
+    .text-box span.current { color: #38bdf8; text-decoration: underline; }
+    .text-box span.pending { color: #9ca3af; }
+
+    input {
+      width: 100%;
+      max-width: 520px;
+      padding: 14px;
+      border-radius: 12px;
+      border: 1px solid rgba(148,163,184,0.35);
+      background: rgba(2,6,23,0.65);
+      color: #e5e7eb;
+      font-size: 16px;
+      outline: none;
+      margin-bottom: 12px;
+    }
+
+    .hud {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 10px;
+    }
+
+    .pill {
+      padding: 8px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(148,163,184,0.25);
+      background: rgba(2,6,23,0.35);
+      font-weight: 800;
+      font-size: 12px;
+    }
+
+    .btn {
+      margin-top: 12px;
+      padding: 12px 16px;
+      border-radius: 12px;
+      border: 1px solid rgba(148,163,184,0.35);
+      background: rgba(2,6,23,0.65);
+      color: #e5e7eb;
+      font-weight: 900;
+      cursor: pointer;
+      min-width: 160px;
+    }
+
+    .btn:active { transform: translateY(1px); }
+
+    .result {
+      margin-top: 10px;
+      font-size: 16px;
+      font-weight: 800;
+    }
+
+    @media (max-width: 900px) {
+      .ad-vertical { display: none; }
+      .top-banner { height: 60px; font-size: 11px; }
+    }
+  </style>
+</head>
+
 <body>
+<div class="layout">
 
-<h2>Typing Speed Test</h2>
-<a href="index.html">⬅ Back</a><br><br>
+  <aside class="ad-vertical">
+    Left Ad<br/>160×600
+  </aside>
 
-<p id="text">The quick brown fox jumps over the lazy dog</p>
-<input id="input" oninput="check()">
-<p id="res"></p>
+  <main class="main-column">
+
+    <div class="top-banner">
+      Top Banner Ad (728×90 / responsive)
+    </div>
+
+    <div class="game-header">
+      <div class="title">⌨ Typing Speed Test</div>
+      <div><a href="index.html">⬅ Back to Hub</a></div>
+    </div>
+
+    <div class="frame">
+      <div class="text-box" id="textBox"></div>
+
+      <div class="hud">
+        <div class="pill" id="timePill">Time: 0.0s</div>
+        <div class="pill" id="wpmPill">WPM: —</div>
+      </div>
+
+      <input
+        id="input"
+        type="text"
+        placeholder="Start typing here…"
+        autocomplete="off"
+        autocorrect="off"
+        autocapitalize="off"
+        spellcheck="false"
+      />
+
+      <div class="result" id="result"></div>
+
+      <button class="btn" id="restartBtn">Restart</button>
+    </div>
+
+  </main>
+
+  <aside class="ad-vertical">
+    Right Ad<br/>160×600
+  </aside>
+
+</div>
 
 <script>
-let start=null;
-let text=document.getElementById("text").innerText;
+(() => {
+  const TEXT =
+    "The quick brown fox jumps over the lazy dog";
 
-function check(){
-  if(!start) start=Date.now();
-  let val=document.getElementById("input").value;
+  const textBox = document.getElementById("textBox");
+  const input = document.getElementById("input");
+  const result = document.getElementById("result");
+  const timePill = document.getElementById("timePill");
+  const wpmPill = document.getElementById("wpmPill");
+  const restartBtn = document.getElementById("restartBtn");
 
-  if(val===text){
-    let time=(Date.now()-start)/1000;
-    let wpm=Math.round((text.split(" ").length/time)*60);
-    document.getElementById("res").innerText="✅ "+wpm+" WPM";
+  let startTime = null;
+  let finished = false;
+
+  function renderText(value = "") {
+    let html = "";
+    for (let i = 0; i < TEXT.length; i++) {
+      if (i < value.length) {
+        html += `<span class="done">${TEXT[i]}</span>`;
+      } else if (i === value.length) {
+        html += `<span class="current">${TEXT[i]}</span>`;
+      } else {
+        html += `<span class="pending">${TEXT[i]}</span>`;
+      }
+    }
+    textBox.innerHTML = html;
   }
-}
+
+  function reset() {
+    startTime = null;
+    finished = false;
+    input.value = "";
+    result.textContent = "";
+    timePill.textContent = "Time: 0.0s";
+    wpmPill.textContent = "WPM: —";
+    renderText("");
+    input.focus();
+  }
+
+  input.addEventListener("input", () => {
+    if (finished) return;
+
+    if (!startTime) startTime = performance.now();
+
+    const val = input.value;
+    renderText(val);
+
+    const elapsed = (performance.now() - startTime) / 1000;
+    timePill.textContent = `Time: ${elapsed.toFixed(1)}s`;
+
+    if (val === TEXT) {
+      finished = true;
+      const words = TEXT.split(" ").length;
+      const wpm = Math.round((words / elapsed) * 60);
+      wpmPill.textContent = `WPM: ${wpm}`;
+      result.textContent = `✅ Great job! ${wpm} WPM`;
+    }
+  });
+
+  restartBtn.addEventListener("click", reset);
+
+  reset();
+})();
 </script>
 
-</body>
 <script src="footer.js"></script>
+</body>
 </html>
