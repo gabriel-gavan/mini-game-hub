@@ -4,83 +4,394 @@
   <meta charset="UTF-8">
   <title>Whack-a-Mole</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!-- ✅ AUTO ADS: keep ONLY this one AdSense loader -->
+  <script async
+    src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5482914432517813"
+    crossorigin="anonymous"></script>
+
   <style>
-    body { font-family: system-ui,sans-serif; background:
-		linear-gradient(135deg, rgba(0,0,0,0.8), rgba(15,23,42,0.9)), /* dark overlay */
-		url("images/hub-bg.jpg") center center / cover no-repeat fixed;color:#fff;text-align:center; }
-    a { color:#a5b4fc; }
-    #grid { display:inline-grid; grid-template-columns:repeat(3,70px); gap:8px;margin-top:10px; }
-    .cell {
-      width:70px;height:70px;
-      background:#111827;border-radius:.6rem;border:1px solid #374151;
-      display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:28px;
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background:
+        linear-gradient(135deg, rgba(0,0,0,0.8), rgba(15,23,42,0.9)),
+        url("images/hub-bg.jpg") center center / cover no-repeat fixed;
+      color: #e5e7eb;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      min-height: 100vh;
     }
-    .mole { background:#22c55e; }
+
+    .layout {
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+      padding: 16px 8px;
+      gap: 12px;
+    }
+
+    .ad-vertical {
+      width: 160px;
+      min-height: 600px;
+      border-radius: 12px;
+      border: 1px dashed #1f2937;
+      background: radial-gradient(circle at top, #020617 0, #020617 55%, #000 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      text-align: center;
+      color: #6b7280;
+      padding: 8px;
+    }
+
+    .main-column {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      flex: 0 0 auto;
+      width: 100%;
+      max-width: 960px;
+    }
+
+    .top-banner {
+      width: 100%;
+      max-width: 960px;
+      height: 90px;
+      border-radius: 12px;
+      border: 1px dashed #1f2937;
+      background: radial-gradient(circle at top, #020617 0, #020617 55%, #000 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      color: #6b7280;
+      text-align: center;
+      padding: 4px;
+    }
+
+    .game-header {
+      width: 100%;
+      max-width: 960px;
+      padding: 0.55rem 1.0rem;
+      border-radius: 12px;
+      border: 1px solid #111827;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: linear-gradient(135deg, #020617 0, #111827 40%, #0b1120 100%);
+      font-size: 0.9rem;
+      gap: 0.8rem;
+      flex-wrap: wrap;
+    }
+    .game-header .title { font-weight: 800; letter-spacing: 0.03em; }
+    .game-header a {
+      color: #e5e7eb;
+      text-decoration: none;
+      font-size: 0.85rem;
+      padding: 0.35rem 0.75rem;
+      border-radius: 999px;
+      border: 1px solid #374151;
+      background: rgba(2,6,23,0.35);
+    }
+    .game-header a:hover { border-color: #6366f1; }
+
+    .panel {
+      width: 100%;
+      max-width: 960px;
+      border-radius: 12px;
+      border: 1px solid rgba(17,24,39,0.9);
+      background: rgba(2,6,23,0.55);
+      padding: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(148,163,184,0.25);
+      background: rgba(2,6,23,0.35);
+      color: #e5e7eb;
+      font-weight: 900;
+      font-size: 12px;
+      letter-spacing: 0.02em;
+      white-space: nowrap;
+    }
+
+    .btn {
+      appearance: none;
+      border: 1px solid rgba(148,163,184,0.35);
+      background: rgba(2,6,23,0.65);
+      color: #e5e7eb;
+      font-weight: 900;
+      letter-spacing: 0.02em;
+      border-radius: 12px;
+      padding: 10px 14px;
+      box-shadow: 0 12px 26px rgba(0,0,0,0.55);
+      opacity: 0.98;
+      cursor: pointer;
+      user-select: none;
+      -webkit-user-select: none;
+      touch-action: manipulation;
+    }
+    .btn:active { transform: translateY(1px); opacity: 1; }
+    .btn.primary { border-color: rgba(56,189,248,0.6); }
+
+    .frame {
+      width: 100%;
+      max-width: 960px;
+      border-radius: 14px;
+      border: 1px solid #4b5563;
+      background: radial-gradient(circle at top, #020617 0, #020617 55%, #000 100%);
+      box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+      padding: 18px 14px 16px;
+      position: relative;
+      overflow: hidden;
+      text-align: center;
+    }
+
+    .subtext {
+      color: #9ca3af;
+      font-size: 13px;
+      margin: 4px 0 14px;
+    }
+
+    #grid {
+      display: inline-grid;
+      grid-template-columns: repeat(3, 88px);
+      gap: 10px;
+      margin: 6px auto 10px;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    .cell {
+      width: 88px;
+      height: 88px;
+      background: rgba(17,24,39,0.78);
+      border-radius: 14px;
+      border: 1px solid rgba(148,163,184,0.25);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 34px;
+      box-shadow: 0 10px 24px rgba(0,0,0,0.35);
+      transition: transform 120ms ease, border-color 120ms ease, background 120ms ease;
+    }
+    .cell:hover { transform: translateY(-1px); border-color: rgba(99,102,241,0.6); }
+    .cell:active { transform: translateY(0px); }
+
+    .cell.mole {
+      border-color: rgba(34,197,94,0.7);
+      background: rgba(34,197,94,0.12);
+    }
+
+    #msg {
+      min-height: 26px;
+      margin-top: 6px;
+      font-weight: 900;
+      letter-spacing: 0.02em;
+    }
+
+    /* extra controls below frame */
+    .controls-below {
+      width: 100%;
+      max-width: 960px;
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      padding: 6px 0 2px;
+    }
+
+    @media (max-width: 900px) {
+      .layout { padding: 8px; gap: 0; }
+      .ad-vertical { display: none; }
+      .top-banner { height: 60px; font-size: 11px; }
+      .game-header { font-size: 0.85rem; padding: 0.5rem 0.7rem; }
+      .game-header a { font-size: 0.8rem; padding: 0.3rem 0.65rem; }
+      .frame { padding: 16px 10px 14px; }
+      #grid { grid-template-columns: repeat(3, 82px); gap: 10px; }
+      .cell { width: 82px; height: 82px; font-size: 32px; }
+    }
+
+    @media (max-width: 420px) {
+      #grid { grid-template-columns: repeat(3, 74px); gap: 9px; }
+      .cell { width: 74px; height: 74px; font-size: 30px; }
+    }
   </style>
 </head>
+
 <body>
+<div class="layout">
+  <!-- LEFT BANNER -->
+  <aside class="ad-vertical">
+    <div>
+      Left Banner Zone<br/>
+      <strong>160×600</strong><br/>
+      Paste your AdSense code here.
+    </div>
+  </aside>
 
-<h2>🐹 Whack-a-Mole</h2>
-<a href="index.html">⬅ Back</a>
-<p>Click the mole as it appears. You have 30 seconds.</p>
+  <!-- MAIN COLUMN -->
+  <main class="main-column">
+    <!-- TOP LEADERBOARD -->
+    <div class="top-banner">
+      Top Banner Zone – recommended 728×90 (auto also works).<br/>
+      Paste your AdSense snippet here.
+    </div>
 
-<p id="score">Score: 0</p>
-<p id="time">Time: 30</p>
-<div id="grid"></div>
-<p id="msg"></p>
+    <!-- GAME HEADER -->
+    <div class="game-header">
+      <div class="title">🐹 Whack-a-Mole</div>
+      <div><a href="index.html">⬅ Back to Hub</a></div>
+    </div>
+
+    <!-- STATUS / CONTROLS -->
+    <div class="panel">
+      <div class="pill" id="statusPill">Score: 0 · Time: 30</div>
+      <div style="display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end;">
+        <button class="btn primary" id="btnRestart" type="button">Restart</button>
+      </div>
+    </div>
+
+    <!-- GAME FRAME -->
+    <div class="frame">
+      <div class="subtext">Click the mole as it appears. You have <b>30 seconds</b>.</div>
+
+      <div id="grid" aria-label="Whack a Mole grid"></div>
+      <p id="msg"></p>
+    </div>
+
+    <!-- ✅ EXTRA RESTART BELOW (desktop + mobile) -->
+    <div class="controls-below">
+      <button class="btn primary" id="btnRestartBelow" type="button">Restart</button>
+    </div>
+  </main>
+
+  <!-- RIGHT BANNER -->
+  <aside class="ad-vertical">
+    <div>
+      Right Banner Zone<br/>
+      <strong>160×600</strong><br/>
+      Paste your AdSense code here.
+    </div>
+  </aside>
+</div>
 
 <script>
-const grid=document.getElementById("grid");
-let score=0, time=30, timer, moleIndex=-1;
+(() => {
+  const grid = document.getElementById("grid");
+  const statusPill = document.getElementById("statusPill");
+  const msg = document.getElementById("msg");
 
-for(let i=0;i<9;i++){
-  const d=document.createElement("div");
-  d.className="cell";
-  d.onclick=()=>hit(i);
-  grid.appendChild(d);
-}
+  const btnRestart = document.getElementById("btnRestart");
+  const btnRestartBelow = document.getElementById("btnRestartBelow");
 
-function spawnMole(){
-  const cells=[...document.querySelectorAll(".cell")];
-  cells.forEach(c=>c.classList.remove("mole"));
-  moleIndex=Math.floor(Math.random()*9);
-  cells[moleIndex].classList.add("mole");
-  cells[moleIndex].innerText="🐹";
-  cells.forEach((c,idx)=>{ if(idx!==moleIndex) c.innerText=""; });
-}
+  let score = 0;
+  let time = 30;
+  let timer = null;
+  let moleIndex = -1;
+  let running = false;
 
-function hit(i){
-  if(i===moleIndex){
-    score++;
-    document.getElementById("score").innerText="Score: "+score;
-    moleIndex=-1;
+  // Build grid once
+  const cells = [];
+  for (let i = 0; i < 9; i++) {
+    const d = document.createElement("div");
+    d.className = "cell";
+    d.setAttribute("role", "button");
+    d.setAttribute("aria-label", "Cell " + (i + 1));
+    d.addEventListener("click", () => hit(i));
+    grid.appendChild(d);
+    cells.push(d);
   }
-}
 
-function tick(){
-  time--;
-  document.getElementById("time").innerText="Time: "+time;
-  if(time<=0){
-    clearInterval(timer);
-    document.getElementById("msg").innerText="⏱ Time's up! Final score: "+score;
-    [...document.querySelectorAll(".cell")].forEach(c=>{c.classList.remove("mole");c.innerText="";});
-  } else {
+  function updateStatus() {
+    statusPill.textContent = `Score: ${score} · Time: ${time}`;
+  }
+
+  function clearMole() {
+    for (let i = 0; i < cells.length; i++) {
+      cells[i].classList.remove("mole");
+      cells[i].textContent = "";
+    }
+    moleIndex = -1;
+  }
+
+  function spawnMole() {
+    clearMole();
+    moleIndex = (Math.random() * 9) | 0;
+    cells[moleIndex].classList.add("mole");
+    cells[moleIndex].textContent = "🐹";
+  }
+
+  function hit(i) {
+    if (!running) return;
+    if (i === moleIndex) {
+      score++;
+      updateStatus();
+      // immediately remove so you can't double-tap it
+      cells[moleIndex].classList.remove("mole");
+      cells[moleIndex].textContent = "";
+      moleIndex = -1;
+    }
+  }
+
+  function endGame() {
+    running = false;
+    if (timer) { clearInterval(timer); timer = null; }
+    clearMole();
+    msg.textContent = `⏱ Time's up! Final score: ${score}`;
+  }
+
+  function tick() {
+    if (!running) return;
+
+    time--;
+    updateStatus();
+
+    if (time <= 0) {
+      endGame();
+    } else {
+      spawnMole();
+    }
+  }
+
+  function start() {
+    score = 0;
+    time = 30;
+    msg.textContent = "";
+    running = true;
+    updateStatus();
+
+    clearMole();
     spawnMole();
+
+    if (timer) clearInterval(timer);
+    timer = setInterval(tick, 1000);
   }
-}
 
-function start(){
-  score=0; time=30;
-  document.getElementById("score").innerText="Score: 0";
-  document.getElementById("time").innerText="Time: 30";
-  document.getElementById("msg").innerText="";
-  if(timer) clearInterval(timer);
-  timer=setInterval(tick,1000);
-}
+  btnRestart.addEventListener("click", (e) => { e.preventDefault(); start(); });
+  btnRestartBelow.addEventListener("click", (e) => { e.preventDefault(); start(); });
 
-start();
+  // Optional: press R to restart
+  window.addEventListener("keydown", (e) => {
+    if (e.key.toLowerCase() === "r") start();
+  });
+
+  start();
+})();
 </script>
 
-</body>
 <script src="footer.js"></script>
+</body>
 </html>
