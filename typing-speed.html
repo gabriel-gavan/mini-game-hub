@@ -264,7 +264,7 @@
 
       <div class="controls-row">
         <label class="toggle" title="Random mode picks a random sentence instead of ascending order.">
-          <input type="checkbox" id="randomToggle" />
+          <input type="checkbox" id="randomToggle" checked />
           <span><strong>Random mode</strong></span>
         </label>
         <button class="btn warn" id="resetScoresBtn" type="button">Reset Saved Scores</button>
@@ -474,9 +474,10 @@
   }
 
   function getModeRandom() {
-    return localStorage.getItem(LS_MODE_KEY) === "1";
-  }
-
+  const v = localStorage.getItem(LS_MODE_KEY);
+  if (v === null) return true;     // ✅ default ON for first-time visitors
+  return v === "1";
+}
   function computeAccuracyAndMistakes(typed) {
     const n = Math.max(TEXT.length, typed.length);
     if (n === 0) return { acc: 100, mistakes: 0 };
@@ -667,3 +668,4 @@
 <script src="footer.js"></script>
 </body>
 </html>
+
